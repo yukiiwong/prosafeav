@@ -423,6 +423,13 @@ Special thanks to the community for your valuable contributions and support in m
                     <sub><b>Wei Shao</b></sub>
                 </a>
             </td>
+            <td align="center">
+                <a href="https://github.com/yukiiwong">
+                    <img src="https://avatars.githubusercontent.com/u/38659683?v=4" width="100;" alt="yukiiwong"/>
+                    <br />
+                    <sub><b>Kain</b></sub>
+                </a>
+            </td>
 		</tr>
 	<tbody>
 </table>
