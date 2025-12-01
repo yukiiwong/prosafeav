@@ -3,6 +3,7 @@ from typing import Dict, List, Tuple
 
 import carla
 import numpy as np
+import math
 
 
 class Command(Enum):
@@ -193,3 +194,51 @@ class TTCCalculator:
                 min_ttc = ttc
 
         return min_ttc if min_ttc < TTCCalculator.TTC_THRESHOLD else 0.0
+
+class ConflictIndicators:
+
+    @staticmethod
+    def compute_distance(ego, target):
+        return ego.get_location().distance(target.get_location())
+
+    @staticmethod
+    def compute_relative_velocity(ego, target):
+        v_ego = ego.get_velocity()
+        v_target = target.get_velocity()
+        return math.sqrt(
+            (v_target.x - v_ego.x)**2 +
+            (v_target.y - v_ego.y)**2 +
+            (v_target.z - v_ego.z)**2
+        )
+
+    @staticmethod
+    def compute_relative_acceleration(ego, target):
+        a_ego = ego.get_acceleration()
+        a_target = target.get_acceleration()
+        return math.sqrt(
+            (a_target.x - a_ego.x)**2 +
+            (a_target.y - a_ego.y)**2 +
+            (a_target.z - a_ego.z)**2
+        )
+
+    @staticmethod
+    def compute_mttc(ego, target, min_threshold=1e-4, max_cap=100.0):
+        d = ConflictIndicators.compute_distance(ego, target)
+        delta_v = ConflictIndicators.compute_relative_velocity(ego, target)
+        delta_a = ConflictIndicators.compute_relative_acceleration(ego, target)
+
+        if abs(delta_a) < min_threshold:
+            return max_cap
+        inside_sqrt = delta_v**2 + 2 * delta_a * d
+        if inside_sqrt < 0:
+            return max_cap
+        return (delta_v + math.sqrt(inside_sqrt)) / delta_a
+
+    @staticmethod
+    def compute_drac(ego, target, min_distance=1e-2, max_cap=100.0):
+        d = ConflictIndicators.compute_distance(ego, target)
+        v_rel = ConflictIndicators.compute_relative_velocity(ego, target)
+
+        if d < min_distance:
+            return max_cap
+        return (v_rel**2) / (2 * d)

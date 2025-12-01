@@ -10,6 +10,7 @@ fi
 CARLA_PORT=$1
 GPU_DEVICE=$2
 LOG_FILE="log_${CARLA_PORT}.log"
+export PYTHONPATH=/home/yukai/CarDreamer_prosafeav:$PYTHONPATH
 CARLA_SERVER_COMMAND="$CARLA_ROOT/CarlaUE4.sh -RenderOffScreen -carla-port=$CARLA_PORT -benchmark -fps=10"
 TRAINING_SCRIPT="dreamerv3/train.py"
 COMMON_PARAMS="--env.world.carla_port $CARLA_PORT --dreamerv3.jax.policy_devices $GPU_DEVICE --dreamerv3.jax.train_devices $GPU_DEVICE"

@@ -1,6 +1,7 @@
 from abc import abstractmethod
 
 import numpy as np
+from .evt_module import CopulaEVTModel
 
 from .carla_base_env import CarlaBaseEnv
 from .toolkit import BasePlanner, TTCCalculator, get_location_distance, get_vehicle_pos, get_vehicle_velocity
@@ -51,6 +52,13 @@ class CarlaWptEnv(CarlaBaseEnv):
         self.waypoints, self.planner_stats = self.get_ego_planner().run_step()
         self.num_completed = self.planner_stats["num_completed"]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.evt_model = CopulaEVTModel()
+        self.evt_update_interval = 50  # 每 50 个 episode 更新一次
+        self._episode_counter = 0
+        
+
     def reward(self):
         reward_scales = self._config.reward.scales
         ego = self.get_ego_vehicle()
@@ -58,61 +66,49 @@ class CarlaWptEnv(CarlaBaseEnv):
         ego_velocity = np.array([*get_vehicle_velocity(ego)])
         speed_norm = np.linalg.norm(ego_velocity)
 
-        # Reward for reaching waypoints
-        r_waypoints = 0.0
-        if self.num_completed > 0:
-            r_waypoints = reward_scales["waypoint"]
+        r_waypoints = reward_scales["waypoint"] if self.num_completed > 0 else 0.0
 
-        # Reward for speed
+        # Speed reward
         r_speed = 0.0
         speed_parallel = 0.0
         speed_perpendicular = 0.0
+        perp_direction_norm = 0.0
         if len(self.waypoints) > 0:
-            # compute the wpt line direction
             next_waypoint = self.waypoints[0]
             next_location = np.array([next_waypoint[0], next_waypoint[1]])
             yaw_radius = next_waypoint[2] * np.pi / 180
             waypoint_direction = np.array([np.cos(yaw_radius), np.sin(yaw_radius)])
-
-            # compute the perpendicular direction
             goal_offset = next_location - ego_location
             perp_direction = goal_offset - np.dot(goal_offset, waypoint_direction) * waypoint_direction
             perp_direction_norm = np.linalg.norm(perp_direction)
-            if perp_direction_norm > 0.05:
-                perp_direction = perp_direction / perp_direction_norm
-            else:
-                perp_direction = np.array([0.0, 0.0])
-
-            # compute the speed reward
+            perp_direction = perp_direction / perp_direction_norm if perp_direction_norm > 0.05 else np.array(
+                [0.0, 0.0])
             desired_speed = self._config.reward.desired_speed
             speed_parallel = np.dot(ego_velocity, waypoint_direction)
             speed_perpendicular = np.dot(ego_velocity, perp_direction)
-            r_speed = (desired_speed - np.abs(speed_parallel - desired_speed) - 2 * max(speed_perpendicular, -0.5)) * reward_scales["speed"]
+            r_speed = (desired_speed - np.abs(speed_parallel - desired_speed) - 2 * max(speed_perpendicular, -0.5)) * \
+                      reward_scales["speed"]
 
-        # Reward for collision
-        r_collision = 0.0
-        if reward_scales["collision"] > 0 and self.is_collision():
-            r_collision = -reward_scales["collision"] * np.abs(speed_norm)
+        r_collision = -reward_scales["collision"] * np.abs(speed_norm) if reward_scales[
+                                                                              "collision"] > 0 and self.is_collision() else 0.0
 
-        # Reward for going out of lane
-        r_out_of_lane = 0.0
-        if len(self.waypoints) > 0:
-            dist = perp_direction_norm
-            if dist > 0.5:
-                r_out_of_lane = -reward_scales["out_of_lane"] * (dist - 0.5)
+        r_out_of_lane = -reward_scales["out_of_lane"] * (
+                    perp_direction_norm - 0.5) if perp_direction_norm > 0.5 else 0.0
 
-        # Reward for reaching the destination
-        r_destination = 0.0
-        if self.is_destination_reached():
-            r_destination = reward_scales["destination_reached"]
+        r_destination = reward_scales["destination_reached"] if self.is_destination_reached() else 0.0
 
-        # Time penalty
         time_penalty = -reward_scales["time"]
 
-        # Total reward
-        total_reward = r_waypoints + r_speed + r_collision + r_out_of_lane + r_destination + time_penalty
-
+        # EVT reward: based on TTC and DRAC
         ttc = TTCCalculator.get_ttc(ego, self._world.carla_world, self._world.carla_map)
+        drac = 0.5 * speed_norm ** 2 / max(perp_direction_norm, 0.1) if perp_direction_norm > 0 else 0.0
+
+        self.evt_model.add_sample(ttc, drac)
+        if self._time_step % self.evt_update_interval == 0:
+            self.evt_model.update_model()
+        r_evt = self.evt_model.get_evt_reward(ttc, drac, weight=reward_scales.get("evt", 1.0))
+
+        total_reward = r_waypoints + r_speed + r_collision + r_out_of_lane + r_destination + time_penalty + r_evt
 
         info = {
             **self.planner_stats,
@@ -126,7 +122,9 @@ class CarlaWptEnv(CarlaBaseEnv):
             "r_speed": r_speed,
             "r_collision": r_collision,
             "r_out_of_lane": r_out_of_lane,
+            "r_evt": r_evt,
             "ttc": ttc,
+            "drac": drac,
         }
 
         return total_reward, info

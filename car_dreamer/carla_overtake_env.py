@@ -29,13 +29,15 @@ class CarlaOvertakeEnv(CarlaWptEnv):
     """
 
     def on_reset(self) -> None:
-        self.nonego_spawn_point = self._config.nonego_spawn_points[np.random.randint(0, len(self._config.nonego_spawn_points) - 1)]
+        print("lane_start_points from config:", self._config.get("lane_start_points"))
+        assert self._config.get("lane_start_points"), "Missing lane_start_points in config"
+        self.nonego_spawn_point = self._config.nonego_spawn_points[np.random.randint(len(self._config.nonego_spawn_points))]
         nonego_transform = carla.Transform(
             carla.Location(*self.nonego_spawn_point[:3]),
             carla.Rotation(*self.nonego_spawn_point[-3:]),
         )
         self.nonego = self._world.spawn_actor(transform=nonego_transform)
-        self.ego_src = self._config.lane_start_points[np.random.randint(0, len(self._config.lane_start_points) - 1)]
+        self.ego_src = self._config.lane_start_points[np.random.randint(len(self._config.lane_start_points))]
         ego_transform = carla.Transform(
             carla.Location(x=self.nonego_spawn_point[0], y=self.ego_src[1], z=self.ego_src[2]),
             carla.Rotation(yaw=-90),
