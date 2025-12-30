@@ -1,8 +1,30 @@
-# Guide for Training DreamerV3 on CarDreamer
+# Guide for Training on ProSafeAV
+
+ProSafeAV is built on the CarDreamer platform and extends it with multiple reinforcement learning algorithms and world model variants for autonomous driving research.
 
 This guide assumes you have installed `car_dreamer`. If not, please follow the instructions in the [main README](../README.md).
 
-First, install the required dependencies for DreamerV3:
+## Available Algorithms
+
+ProSafeAV includes the following algorithms:
+
+### World Model-Based Methods
+- **DreamerV3** - State-of-the-art world model with RSSM (Recurrent State Space Model)
+- **ProSafeAV RSSM** - Custom RSSM variant for safer autonomous driving
+- **ProSafeAV Deterministic** - Deterministic world model variant
+- **PlaNet** - Deep Planning Network
+- **World Models** - Classic world model architecture
+- **Simple World Model** - Lightweight world model implementation
+
+### Model-Free RL Methods
+- **DQN** - Deep Q-Network
+- **SAC** - Soft Actor-Critic
+- **TD3** - Twin Delayed Deep Deterministic Policy Gradient
+- **PPO** - Proximal Policy Optimization
+
+## Installation
+
+First, install the required dependencies for DreamerV3 and world model-based methods:
 
 ```bash
 cd dreamerv3
@@ -21,21 +43,101 @@ export LD_LIBRARY_PATH=$CUDNN_PATH/lib:$CUSOLVER_PATH/lib:$CONDA_PREFIX/lib:$LD_
 
 ## Training
 
-Execute the training script with desired configurations:
+### Using ProSafeAV Training Script (Recommended)
+
+ProSafeAV provides an improved training script with automatic CARLA server management and crash recovery:
 
 ```bash
 cd ..
-# Example 1: Use default settings to train an agent
-bash train_dm3.sh 2000 0 --task carla_four_lane --dreamerv3.logdir ./logdir/carla_four_lane
-# Example 2: Override task and model parameters
-bash train_dm3.sh 2000 0 --task carla_right_turn_simple \
+# Basic usage
+bash train_prosafeav.sh 2000 0 --task carla_four_lane --dreamerv3.logdir ./logdir/carla_four_lane
+
+# Override task and model parameters
+bash train_prosafeav.sh 2000 0 --task carla_right_turn_simple \
     --dreamerv3.logdir ./logdir/carla_right_turn_simple \
     --dreamerv3.run.steps=5e6
 ```
 
-`2000` is the port number of the CARLA server. The script will automatically start the server so you don't need to start it manually.
-`0` is the GPU number.
-`--task` is the name of the task and `--dreamerv3.logdir` is the directory to save the training logs. For a complete list of tasks and their configurations, please refer to the [documentation](https://car-dreamer.readthedocs.io/en/latest/tasks.html).
+**Parameters:**
+- `2000` - CARLA server port number (script will automatically start the server)
+- `0` - GPU device number
+- `--task` - Task name (see [documentation](https://car-dreamer.readthedocs.io/en/latest/tasks.html) for available tasks)
+- `--dreamerv3.logdir` - Directory to save training logs
+
+**Features:**
+- Automatic CARLA server startup and restart on crashes
+- Training script auto-restart on failures
+- Logs saved to `log_<port>.log`
+
+### Training Different Algorithms
+
+#### World Model-Based Methods
+
+**DreamerV3 (Default):**
+```bash
+bash train_prosafeav.sh 2000 0 --task carla_four_lane --dreamerv3.logdir ./logdir/dreamerv3
+```
+
+**ProSafeAV RSSM Variant:**
+```bash
+python dreamerv3/train_prosafeav_rssm.py --task carla_four_lane --dreamerv3.logdir ./logdir/prosafeav_rssm
+```
+
+**ProSafeAV Deterministic:**
+```bash
+python dreamerv3/train_prosafeav_deterministic.py --task carla_four_lane --dreamerv3.logdir ./logdir/prosafeav_det
+```
+
+**PlaNet:**
+```bash
+python dreamerv3/train_planet.py --task carla_four_lane --dreamerv3.logdir ./logdir/planet
+```
+
+**World Models:**
+```bash
+python dreamerv3/train_worldmodels.py --task carla_four_lane --dreamerv3.logdir ./logdir/worldmodels
+```
+
+**Simple World Model:**
+```bash
+python dreamerv3/train_simple.py --task carla_four_lane --dreamerv3.logdir ./logdir/simple
+```
+
+#### Model-Free RL Methods
+
+**DQN:**
+```bash
+python dreamerv3/train_dqn.py --task carla_four_lane --dreamerv3.logdir ./logdir/dqn
+```
+
+**SAC:**
+```bash
+python dreamerv3/train_sac.py --task carla_four_lane --dreamerv3.logdir ./logdir/sac
+```
+
+**TD3:**
+```bash
+python dreamerv3/train_td3.py --task carla_four_lane --dreamerv3.logdir ./logdir/td3
+```
+
+**PPO:**
+```bash
+python dreamerv3/train_ppo.py --task carla_four_lane --dreamerv3.logdir ./logdir/ppo
+```
+
+### Algorithm Selection Guide
+
+- **DreamerV3**: Best overall performance, recommended for most tasks. Learns world model and policy jointly.
+- **ProSafeAV Variants**: Experimental variants focusing on safety and reliability for autonomous driving.
+- **Model-Free Methods (DQN/SAC/TD3/PPO)**: Faster training but may require more environment interactions. Good for simpler tasks.
+- **Simple/PlaNet/World Models**: Lightweight alternatives for resource-constrained environments or ablation studies.
+
+### Notes
+
+- World model-based methods generally require more GPU memory (10-20GB) but achieve better sample efficiency
+- Model-free methods are faster to train but may need more episodes to converge
+- All methods support the same tasks and configuration options as DreamerV3
+- For running multiple experiments, you can use different CARLA ports (e.g., 2000, 2002, 2004) on different GPUs
 
 ## Visualization
 
