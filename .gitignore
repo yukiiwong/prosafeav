@@ -15,6 +15,67 @@ traffic_scenarios/
 .vscode/
 .idea/
 
+# Model files and checkpoints
+*.pth
+*.pt
+*.ckpt
+*.pkl
+*.pickle
+*.h5
+*.hdf5
+*.pb
+*.onnx
+*.tflite
+*.caffemodel
+*.weights
+
+# Training logs and outputs
+logs/
+logdir/
+runs/
+outputs/
+checkpoints/
+tensorboard/
+tb_logs/
+replay/
+**/replay/
+dreamerv3/carla_*/
+dreamerv3/prosafeav_*/
+*.yaml
+*.jsonl
+events.out.tfevents.*
+
+# Large data files
+*.npy
+*.npz
+*.tfrecord
+*.tar
+*.tar.gz
+*.zip
+*.7z
+*.rar
+
+# CARLA specific
+CARLA/
+CarlaUE4/
+*.umap
+*.uasset
+
+# Dataset and cache
+data/
+datasets/
+cache/
+*.cache
+.cache/
+
+# Video and image outputs
+*.mp4
+*.avi
+*.mov
+*.mkv
+videos/
+recordings/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
