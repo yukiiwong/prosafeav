@@ -236,41 +236,6 @@ python dreamerv3/train_prosafeav_deterministic.py \
     --dreamerv3.logdir ./logdir/prosafeav_det
 ```
 
-#### Baseline Algorithms
-
-**World Model-Based:**
-```bash
-# DreamerV3 (baseline world model)
-bash train_prosafeav.sh 2000 0 --task carla_overtake \
-    --dreamerv3.logdir ./logdir/dreamerv3
-
-# PlaNet
-python dreamerv3/train_planet.py --task carla_overtake \
-    --dreamerv3.logdir ./logdir/planet
-
-# Simple World Model
-python dreamerv3/train_simple.py --task carla_overtake \
-    --dreamerv3.logdir ./logdir/simple
-```
-
-**Model-Free RL:**
-```bash
-# SAC
-python dreamerv3/train_sac.py --task carla_overtake \
-    --dreamerv3.logdir ./logdir/sac
-
-# TD3
-python dreamerv3/train_td3.py --task carla_overtake \
-    --dreamerv3.logdir ./logdir/td3
-
-# PPO
-python dreamerv3/train_ppo.py --task carla_overtake \
-    --dreamerv3.logdir ./logdir/ppo
-
-# DQN
-python dreamerv3/train_dqn.py --task carla_overtake \
-    --dreamerv3.logdir ./logdir/dqn
-```
 
 ### Evaluation
 
@@ -371,8 +336,7 @@ We also acknowledge the following projects that contributed to this work:
 For questions or collaborations:
 
 - **Yukai Wang**: yukai@kaist.ac.kr
-- **Prof. Tiantian Chen**: nicole.chen@kaist.ac.kr
-- **Prof. Sikai Chen**: sikai.chen@wisc.edu
+
 
 ## 📜 License
 
