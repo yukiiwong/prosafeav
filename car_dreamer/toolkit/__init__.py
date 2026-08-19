@@ -4,3 +4,4 @@ from .flags import Flags
 from .monitor.monitor import EnvMonitorOpenCV
 from .observer.observer import Observer
 from .planner import *
+from . import traffic_models

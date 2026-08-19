@@ -16,7 +16,7 @@ class CheckTypesFilter(logging.Filter):
 
 logger.addFilter(CheckTypesFilter())
 
-from . import behaviors, jaxagent, jaxutils, nets
+from . import behaviors, evt_jax, jaxagent, jaxutils, nets
 from . import ninjax as nj
 
 
@@ -139,11 +139,24 @@ class WorldModel(nj.Module):
             "reward": nets.MLP((), **config.reward_head, name="rew"),
             "cont": nets.MLP((), **config.cont_head, name="cont"),
         }
+        # Safety head: regresses the normalised surrogate safety measures
+        # [1 - TTC/TTC_HORIZON, DRAC/DRAC_SCALE] from the latent state, so the EVT
+        # tail risk can be evaluated on imagined rollouts instead of only on
+        # realised transitions.  Trained jointly with the other heads.
+        self.use_safety_head = (
+            config.evt.mode in ("imagine", "both") and "safety" in shapes
+        )
+        if self.use_safety_head:
+            self.heads["safety"] = nets.MLP(
+                shapes["safety"], **config.safety_head, name="safety"
+            )
         self.opt = jaxutils.Optimizer(name="model_opt", **config.model_opt)
         scales = self.config.loss_scales.copy()
         image, vector = scales.pop("image"), scales.pop("vector")
         scales.update({k: image for k in self.heads["decoder"].cnn_shapes})
         scales.update({k: vector for k in self.heads["decoder"].mlp_shapes})
+        if self.use_safety_head:
+            scales["safety"] = config.loss_scales.safety
         self.scales = scales
 
     def initial(self, batch_size):
@@ -189,6 +202,7 @@ class WorldModel(nj.Module):
     def imagine(self, policy, start, horizon):
         first_cont = (1.0 - start["is_terminal"]).astype(jnp.float32)
         keys = list(self.rssm.initial(1).keys())
+        evt_params = start.get("evt_params", None)
         start = {k: v for k, v in start.items() if k in keys}
         start["action"] = policy(start)
 
@@ -199,6 +213,10 @@ class WorldModel(nj.Module):
 
         traj = jaxutils.scan(step, jnp.arange(horizon), start, self.config.imag_unroll)
         traj = {k: jnp.concatenate([start[k][None], v], 0) for k, v in traj.items()}
+        if evt_params is not None:
+            traj["evt_params"] = jnp.broadcast_to(
+                evt_params[None], (horizon + 1,) + evt_params.shape
+            )
         cont = self.heads["cont"](traj).mode()
         traj["cont"] = jnp.concatenate([first_cont[None], cont[1:]], 0)
         discount = 1 - 1 / self.config.horizon
@@ -208,6 +226,7 @@ class WorldModel(nj.Module):
     def imagine_carry(self, policy, start, horizon, carry):
         first_cont = (1.0 - start["is_terminal"]).astype(jnp.float32)
         keys = list(self.rssm.initial(1).keys())
+        evt_params = start.get("evt_params", None)
         start = {k: v for k, v in start.items() if k in keys}
         outs, carry = policy(start, carry)
         start["action"] = outs
@@ -222,6 +241,10 @@ class WorldModel(nj.Module):
 
         traj = jaxutils.scan(step, jnp.arange(horizon), start, self.config.imag_unroll)
         traj = {k: jnp.concatenate([start[k][None], v], 0) for k, v in traj.items() if k != "carry"}
+        if evt_params is not None:
+            traj["evt_params"] = jnp.broadcast_to(
+                evt_params[None], (horizon + 1,) + evt_params.shape
+            )
         cont = self.heads["cont"](traj).mode()
         traj["cont"] = jnp.concatenate([first_cont[None], cont[1:]], 0)
         discount = 1 - 1 / self.config.horizon

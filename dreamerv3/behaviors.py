@@ -3,13 +3,34 @@ from tensorflow_probability.substrates import jax as tfp
 
 tfd = tfp.distributions
 
-from . import agent, expl, jaxutils
+from . import agent, evt_jax, expl, jaxutils
 from . import ninjax as nj
 
 
 class Greedy(nj.Module):
     def __init__(self, wm, act_space, config):
-        rewfn = lambda s: wm.heads["reward"](s).mean()[1:]
+        # ProSafeAV: subtract the EVT tail-risk penalty evaluated on the *imagined*
+        # latent rollout.  The safety indicators come from the world model's safety
+        # head and the fitted GPD/copula parameters ride along the trajectory as
+        # ``evt_params``, so the penalty is a forward-looking risk estimate rather
+        # than a replay of what the environment already observed.
+        #
+        # ``config.evt.mode``:
+        #   none    -- no EVT anywhere (the DreamerV3 ablation)
+        #   env     -- penalty applied only in the environment reward (post hoc)
+        #   imagine -- penalty applied only here, on imagined rollouts
+        #   both    -- applied in both places
+        use_imag = config.evt.mode in ("imagine", "both")
+        w_evt = float(config.evt.imag_weight)
+
+        def rewfn(s):
+            reward = wm.heads["reward"](s).mean()[1:]
+            if use_imag and "safety" in wm.heads and "evt_params" in s:
+                safety = wm.heads["safety"](s).mean()[1:]
+                risk = evt_jax.evt_risk(safety, s["evt_params"][1:])
+                reward = reward - w_evt * risk
+            return reward
+
         if config.critic_type == "vfunction":
             critics = {"extr": agent.VFunction(rewfn, config, name="critic")}
         else:

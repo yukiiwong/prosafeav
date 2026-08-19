@@ -26,7 +26,7 @@ defaults:
     script: train
     steps: 1e8
     expl_until: 0
-    log_every: 1000
+    log_every: 100
     save_every: 2000
     eval_every: 1e4
     eval_initial: True
@@ -128,6 +128,29 @@ defaults:
       fan: avg,
       bins: 255,
     }
+  # ProSafeAV: head predicting the normalised surrogate safety measures
+  # [1 - TTC/10s, DRAC/8.5] from the latent state.  Its output feeds the EVT
+  # tail-risk penalty during imagination.
+  safety_head:
+    {
+      layers: 4,
+      units: 512,
+      act: silu,
+      norm: layer,
+      dist: mse,
+      outscale: 1.0,
+      outnorm: False,
+      inputs: [deter, stoch],
+      winit: normal,
+      fan: avg,
+    }
+
+  # ProSafeAV EVT integration.
+  #   mode        none | env | imagine | both
+  #   imag_weight weight of the tail-risk penalty inside imagination; the
+  #               environment-side weight stays in env.reward.scales.evt
+  evt: { mode: both, imag_weight: 3.0 }
+
   cont_head:
     {
       layers: 5,
@@ -147,6 +170,7 @@ defaults:
       vector: 1.0,
       reward: 1.0,
       cont: 1.0,
+      safety: 1.0,
       dyn: 0.5,
       rep: 0.1,
       actor: 1.0,

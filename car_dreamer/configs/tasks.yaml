@@ -442,3 +442,1261 @@ carla_follow:
     decoder.cnn_keys: "birdeye_wpt"
     decoder.cnn_kernels: [5, 5, 5, 6, 6]
     train.log_keys_video: [birdeye_wpt]
+
+# >>> ProSafeAV revision tasks (generated) >>>
+
+# ProSafeAV main configuration: heterogeneous IDM/MOBIL traffic at a medium density, logistic extreme-value copula, EVT penalty applied both in the environment reward and inside latent imagination.
+carla_overtake_prosafeav:
+  env:
+    name: CarlaOvertakeEnv-v0
+    observation.enabled: [collision, birdeye_wpt]
+    nonego_spawn_points:
+      - [5.8, 80.0, 0.1, 0.0, -90.0, 0.0]
+      - [12.2, 80.0, 0.1, 0.0, -90.0, 0.0]
+    lane_start_points:
+      - [5.8, 100, 0.1]
+    lane_end_points:
+      - [5.8, 0.0, 0.1]
+    lane_centres: [5.8, 9.0, 12.2, 15.6]
+    background_controller: idm_mobil
+    traffic_density: 15          # background vehicles per km per lane
+    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
+    spawn_gap_range: [12.0, 45.0]
+    aggressive_fraction: 0.25
+    swing_steer: 0.04
+    swing_amplitude: 0.2
+    swing_trigger_dist: 20
+    pid_coeffs: [0.03, 0.0, 0.03]
+    evt:
+      mode: both          # none | env | imagine | both
+      copula: logistic          # logistic (manuscript) | frank (sensitivity check)
+      threshold_method: stability   # stability | mrl | quantile
+      threshold_ttc: null       # null selects the threshold from the data
+      threshold_drac: null
+      update_interval: 2000     # environment steps between refits
+      buffer_size: 20000
+      min_sample: 500
+      min_exceedances: 50
+      risk_tolerance: 0.0     # u in Eq. (6)
+      indicator_mode: max  # max | longitudinal | planar
+      interaction_radius: 50.0
+      crash_drac: 8.5
+    reward:
+      desired_speed: 5
+      reward_overtake_dist: 8
+      early_lane_change_dist: 10
+      lane_width: 3.4
+      scales:
+        {
+          waypoint: 2.0,
+          speed: 0.5,
+          stay_same_lane: 0.3,
+          out_of_lane: 3.0,
+          collision: 30.0,
+          time: 0.0,
+          evt: 3.0,
+          exceeding: 200.0,
+          overtake: 200.0,
+          early_lane_change: 0.0,
+          destination_reached: 20.0,
+        }
+    terminal:
+      out_lane_thres: 5
+      time_limit: 500
+      left_lane_boundry: 3.7
+      right_lane_boundry: 17.7
+      lane_width: 3.4
+      terminal_dist: 100
+
+  dreamerv3:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    run.log_keys_video: [birdeye_wpt]
+    run.log_keys_max: "collision"
+    evt.mode: both
+    evt.imag_weight: 3.0
+
+  dreamerv2:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_kernels: [5, 5, 5, 6, 6]
+    train.log_keys_video: [birdeye_wpt]
+
+# Density sweep: 5 veh/km/lane (sparse).
+carla_overtake_d05:
+  env:
+    name: CarlaOvertakeEnv-v0
+    observation.enabled: [collision, birdeye_wpt]
+    nonego_spawn_points:
+      - [5.8, 80.0, 0.1, 0.0, -90.0, 0.0]
+      - [12.2, 80.0, 0.1, 0.0, -90.0, 0.0]
+    lane_start_points:
+      - [5.8, 100, 0.1]
+    lane_end_points:
+      - [5.8, 0.0, 0.1]
+    lane_centres: [5.8, 9.0, 12.2, 15.6]
+    background_controller: idm_mobil
+    traffic_density: 5          # background vehicles per km per lane
+    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
+    spawn_gap_range: [12.0, 45.0]
+    aggressive_fraction: 0.25
+    swing_steer: 0.04
+    swing_amplitude: 0.2
+    swing_trigger_dist: 20
+    pid_coeffs: [0.03, 0.0, 0.03]
+    evt:
+      mode: both          # none | env | imagine | both
+      copula: logistic          # logistic (manuscript) | frank (sensitivity check)
+      threshold_method: stability   # stability | mrl | quantile
+      threshold_ttc: null       # null selects the threshold from the data
+      threshold_drac: null
+      update_interval: 2000     # environment steps between refits
+      buffer_size: 20000
+      min_sample: 500
+      min_exceedances: 50
+      risk_tolerance: 0.0     # u in Eq. (6)
+      indicator_mode: max  # max | longitudinal | planar
+      interaction_radius: 50.0
+      crash_drac: 8.5
+    reward:
+      desired_speed: 5
+      reward_overtake_dist: 8
+      early_lane_change_dist: 10
+      lane_width: 3.4
+      scales:
+        {
+          waypoint: 2.0,
+          speed: 0.5,
+          stay_same_lane: 0.3,
+          out_of_lane: 3.0,
+          collision: 30.0,
+          time: 0.0,
+          evt: 3.0,
+          exceeding: 200.0,
+          overtake: 200.0,
+          early_lane_change: 0.0,
+          destination_reached: 20.0,
+        }
+    terminal:
+      out_lane_thres: 5
+      time_limit: 500
+      left_lane_boundry: 3.7
+      right_lane_boundry: 17.7
+      lane_width: 3.4
+      terminal_dist: 100
+
+  dreamerv3:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    run.log_keys_video: [birdeye_wpt]
+    run.log_keys_max: "collision"
+    evt.mode: both
+    evt.imag_weight: 3.0
+
+  dreamerv2:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_kernels: [5, 5, 5, 6, 6]
+    train.log_keys_video: [birdeye_wpt]
+
+# Density sweep: 15 veh/km/lane (medium).
+carla_overtake_d15:
+  env:
+    name: CarlaOvertakeEnv-v0
+    observation.enabled: [collision, birdeye_wpt]
+    nonego_spawn_points:
+      - [5.8, 80.0, 0.1, 0.0, -90.0, 0.0]
+      - [12.2, 80.0, 0.1, 0.0, -90.0, 0.0]
+    lane_start_points:
+      - [5.8, 100, 0.1]
+    lane_end_points:
+      - [5.8, 0.0, 0.1]
+    lane_centres: [5.8, 9.0, 12.2, 15.6]
+    background_controller: idm_mobil
+    traffic_density: 15          # background vehicles per km per lane
+    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
+    spawn_gap_range: [12.0, 45.0]
+    aggressive_fraction: 0.25
+    swing_steer: 0.04
+    swing_amplitude: 0.2
+    swing_trigger_dist: 20
+    pid_coeffs: [0.03, 0.0, 0.03]
+    evt:
+      mode: both          # none | env | imagine | both
+      copula: logistic          # logistic (manuscript) | frank (sensitivity check)
+      threshold_method: stability   # stability | mrl | quantile
+      threshold_ttc: null       # null selects the threshold from the data
+      threshold_drac: null
+      update_interval: 2000     # environment steps between refits
+      buffer_size: 20000
+      min_sample: 500
+      min_exceedances: 50
+      risk_tolerance: 0.0     # u in Eq. (6)
+      indicator_mode: max  # max | longitudinal | planar
+      interaction_radius: 50.0
+      crash_drac: 8.5
+    reward:
+      desired_speed: 5
+      reward_overtake_dist: 8
+      early_lane_change_dist: 10
+      lane_width: 3.4
+      scales:
+        {
+          waypoint: 2.0,
+          speed: 0.5,
+          stay_same_lane: 0.3,
+          out_of_lane: 3.0,
+          collision: 30.0,
+          time: 0.0,
+          evt: 3.0,
+          exceeding: 200.0,
+          overtake: 200.0,
+          early_lane_change: 0.0,
+          destination_reached: 20.0,
+        }
+    terminal:
+      out_lane_thres: 5
+      time_limit: 500
+      left_lane_boundry: 3.7
+      right_lane_boundry: 17.7
+      lane_width: 3.4
+      terminal_dist: 100
+
+  dreamerv3:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    run.log_keys_video: [birdeye_wpt]
+    run.log_keys_max: "collision"
+    evt.mode: both
+    evt.imag_weight: 3.0
+
+  dreamerv2:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_kernels: [5, 5, 5, 6, 6]
+    train.log_keys_video: [birdeye_wpt]
+
+# Density sweep: 30 veh/km/lane (dense).
+carla_overtake_d30:
+  env:
+    name: CarlaOvertakeEnv-v0
+    observation.enabled: [collision, birdeye_wpt]
+    nonego_spawn_points:
+      - [5.8, 80.0, 0.1, 0.0, -90.0, 0.0]
+      - [12.2, 80.0, 0.1, 0.0, -90.0, 0.0]
+    lane_start_points:
+      - [5.8, 100, 0.1]
+    lane_end_points:
+      - [5.8, 0.0, 0.1]
+    lane_centres: [5.8, 9.0, 12.2, 15.6]
+    background_controller: idm_mobil
+    traffic_density: 30          # background vehicles per km per lane
+    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
+    spawn_gap_range: [12.0, 45.0]
+    aggressive_fraction: 0.25
+    swing_steer: 0.04
+    swing_amplitude: 0.2
+    swing_trigger_dist: 20
+    pid_coeffs: [0.03, 0.0, 0.03]
+    evt:
+      mode: both          # none | env | imagine | both
+      copula: logistic          # logistic (manuscript) | frank (sensitivity check)
+      threshold_method: stability   # stability | mrl | quantile
+      threshold_ttc: null       # null selects the threshold from the data
+      threshold_drac: null
+      update_interval: 2000     # environment steps between refits
+      buffer_size: 20000
+      min_sample: 500
+      min_exceedances: 50
+      risk_tolerance: 0.0     # u in Eq. (6)
+      indicator_mode: max  # max | longitudinal | planar
+      interaction_radius: 50.0
+      crash_drac: 8.5
+    reward:
+      desired_speed: 5
+      reward_overtake_dist: 8
+      early_lane_change_dist: 10
+      lane_width: 3.4
+      scales:
+        {
+          waypoint: 2.0,
+          speed: 0.5,
+          stay_same_lane: 0.3,
+          out_of_lane: 3.0,
+          collision: 30.0,
+          time: 0.0,
+          evt: 3.0,
+          exceeding: 200.0,
+          overtake: 200.0,
+          early_lane_change: 0.0,
+          destination_reached: 20.0,
+        }
+    terminal:
+      out_lane_thres: 5
+      time_limit: 500
+      left_lane_boundry: 3.7
+      right_lane_boundry: 17.7
+      lane_width: 3.4
+      terminal_dist: 100
+
+  dreamerv3:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    run.log_keys_video: [birdeye_wpt]
+    run.log_keys_max: "collision"
+    evt.mode: both
+    evt.imag_weight: 3.0
+
+  dreamerv2:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_kernels: [5, 5, 5, 6, 6]
+    train.log_keys_video: [birdeye_wpt]
+
+# Density sweep: 45 veh/km/lane (congested).
+carla_overtake_d45:
+  env:
+    name: CarlaOvertakeEnv-v0
+    observation.enabled: [collision, birdeye_wpt]
+    nonego_spawn_points:
+      - [5.8, 80.0, 0.1, 0.0, -90.0, 0.0]
+      - [12.2, 80.0, 0.1, 0.0, -90.0, 0.0]
+    lane_start_points:
+      - [5.8, 100, 0.1]
+    lane_end_points:
+      - [5.8, 0.0, 0.1]
+    lane_centres: [5.8, 9.0, 12.2, 15.6]
+    background_controller: idm_mobil
+    traffic_density: 45          # background vehicles per km per lane
+    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
+    spawn_gap_range: [12.0, 45.0]
+    aggressive_fraction: 0.25
+    swing_steer: 0.04
+    swing_amplitude: 0.2
+    swing_trigger_dist: 20
+    pid_coeffs: [0.03, 0.0, 0.03]
+    evt:
+      mode: both          # none | env | imagine | both
+      copula: logistic          # logistic (manuscript) | frank (sensitivity check)
+      threshold_method: stability   # stability | mrl | quantile
+      threshold_ttc: null       # null selects the threshold from the data
+      threshold_drac: null
+      update_interval: 2000     # environment steps between refits
+      buffer_size: 20000
+      min_sample: 500
+      min_exceedances: 50
+      risk_tolerance: 0.0     # u in Eq. (6)
+      indicator_mode: max  # max | longitudinal | planar
+      interaction_radius: 50.0
+      crash_drac: 8.5
+    reward:
+      desired_speed: 5
+      reward_overtake_dist: 8
+      early_lane_change_dist: 10
+      lane_width: 3.4
+      scales:
+        {
+          waypoint: 2.0,
+          speed: 0.5,
+          stay_same_lane: 0.3,
+          out_of_lane: 3.0,
+          collision: 30.0,
+          time: 0.0,
+          evt: 3.0,
+          exceeding: 200.0,
+          overtake: 200.0,
+          early_lane_change: 0.0,
+          destination_reached: 20.0,
+        }
+    terminal:
+      out_lane_thres: 5
+      time_limit: 500
+      left_lane_boundry: 3.7
+      right_lane_boundry: 17.7
+      lane_width: 3.4
+      terminal_dist: 100
+
+  dreamerv3:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    run.log_keys_video: [birdeye_wpt]
+    run.log_keys_max: "collision"
+    evt.mode: both
+    evt.imag_weight: 3.0
+
+  dreamerv2:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_kernels: [5, 5, 5, 6, 6]
+    train.log_keys_video: [birdeye_wpt]
+
+# Field-of-view limited BEV: the raster is built only from what an onboard sensor suite can observe, so occluded and out-of-range vehicles are absent. Occluded and out-of-range vehicles are simply absent from the raster.
+carla_overtake_fov:
+  env:
+    name: CarlaOvertakeEnv-v0
+    observation.enabled: [collision, birdeye_wpt]
+    nonego_spawn_points:
+      - [5.8, 80.0, 0.1, 0.0, -90.0, 0.0]
+      - [12.2, 80.0, 0.1, 0.0, -90.0, 0.0]
+    lane_start_points:
+      - [5.8, 100, 0.1]
+    lane_end_points:
+      - [5.8, 0.0, 0.1]
+    lane_centres: [5.8, 9.0, 12.2, 15.6]
+    background_controller: idm_mobil
+    traffic_density: 15          # background vehicles per km per lane
+    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
+    spawn_gap_range: [12.0, 45.0]
+    aggressive_fraction: 0.25
+    swing_steer: 0.04
+    swing_amplitude: 0.2
+    swing_trigger_dist: 20
+    pid_coeffs: [0.03, 0.0, 0.03]
+    evt:
+      mode: both          # none | env | imagine | both
+      copula: logistic          # logistic (manuscript) | frank (sensitivity check)
+      threshold_method: stability   # stability | mrl | quantile
+      threshold_ttc: null       # null selects the threshold from the data
+      threshold_drac: null
+      update_interval: 2000     # environment steps between refits
+      buffer_size: 20000
+      min_sample: 500
+      min_exceedances: 50
+      risk_tolerance: 0.0     # u in Eq. (6)
+      indicator_mode: max  # max | longitudinal | planar
+      interaction_radius: 50.0
+      crash_drac: 8.5
+    reward:
+      desired_speed: 5
+      reward_overtake_dist: 8
+      early_lane_change_dist: 10
+      lane_width: 3.4
+      scales:
+        {
+          waypoint: 2.0,
+          speed: 0.5,
+          stay_same_lane: 0.3,
+          out_of_lane: 3.0,
+          collision: 30.0,
+          time: 0.0,
+          evt: 3.0,
+          exceeding: 200.0,
+          overtake: 200.0,
+          early_lane_change: 0.0,
+          destination_reached: 20.0,
+        }
+    terminal:
+      out_lane_thres: 5
+      time_limit: 500
+      left_lane_boundry: 3.7
+      right_lane_boundry: 17.7
+      lane_width: 3.4
+      terminal_dist: 100
+    observation:
+      birdeye_wpt:
+        observability: fov
+        sight_fov: 150
+        sight_range: 32
+
+  dreamerv3:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    run.log_keys_video: [birdeye_wpt]
+    run.log_keys_max: "collision"
+    evt.mode: both
+    evt.imag_weight: 3.0
+
+  dreamerv2:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_kernels: [5, 5, 5, 6, 6]
+    train.log_keys_video: [birdeye_wpt]
+
+# Perception-degraded BEV: detections are perturbed to emulate the tracking errors of a real onboard stack.
+carla_overtake_noisy:
+  env:
+    name: CarlaOvertakeEnv-v0
+    observation.enabled: [collision, birdeye_wpt_with_errors]
+    nonego_spawn_points:
+      - [5.8, 80.0, 0.1, 0.0, -90.0, 0.0]
+      - [12.2, 80.0, 0.1, 0.0, -90.0, 0.0]
+    lane_start_points:
+      - [5.8, 100, 0.1]
+    lane_end_points:
+      - [5.8, 0.0, 0.1]
+    lane_centres: [5.8, 9.0, 12.2, 15.6]
+    background_controller: idm_mobil
+    traffic_density: 15          # background vehicles per km per lane
+    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
+    spawn_gap_range: [12.0, 45.0]
+    aggressive_fraction: 0.25
+    swing_steer: 0.04
+    swing_amplitude: 0.2
+    swing_trigger_dist: 20
+    pid_coeffs: [0.03, 0.0, 0.03]
+    evt:
+      mode: both          # none | env | imagine | both
+      copula: logistic          # logistic (manuscript) | frank (sensitivity check)
+      threshold_method: stability   # stability | mrl | quantile
+      threshold_ttc: null       # null selects the threshold from the data
+      threshold_drac: null
+      update_interval: 2000     # environment steps between refits
+      buffer_size: 20000
+      min_sample: 500
+      min_exceedances: 50
+      risk_tolerance: 0.0     # u in Eq. (6)
+      indicator_mode: max  # max | longitudinal | planar
+      interaction_radius: 50.0
+      crash_drac: 8.5
+    reward:
+      desired_speed: 5
+      reward_overtake_dist: 8
+      early_lane_change_dist: 10
+      lane_width: 3.4
+      scales:
+        {
+          waypoint: 2.0,
+          speed: 0.5,
+          stay_same_lane: 0.3,
+          out_of_lane: 3.0,
+          collision: 30.0,
+          time: 0.0,
+          evt: 3.0,
+          exceeding: 200.0,
+          overtake: 200.0,
+          early_lane_change: 0.0,
+          destination_reached: 20.0,
+        }
+    terminal:
+      out_lane_thres: 5
+      time_limit: 500
+      left_lane_boundry: 3.7
+      right_lane_boundry: 17.7
+      lane_width: 3.4
+      terminal_dist: 100
+
+  dreamerv3:
+    encoder.cnn_keys: "birdeye_wpt_with_errors"
+    decoder.cnn_keys: "birdeye_wpt_with_errors"
+    run.log_keys_video: [birdeye_wpt_with_errors]
+    run.log_keys_max: "collision"
+    evt.mode: both
+    evt.imag_weight: 3.0
+
+  dreamerv2:
+    encoder.cnn_keys: "birdeye_wpt_with_errors"
+    decoder.cnn_keys: "birdeye_wpt_with_errors"
+    decoder.cnn_kernels: [5, 5, 5, 6, 6]
+    train.log_keys_video: [birdeye_wpt_with_errors]
+
+# Ablation: no EVT term anywhere (DreamerV3 baseline).
+carla_overtake_noevt:
+  env:
+    name: CarlaOvertakeEnv-v0
+    observation.enabled: [collision, birdeye_wpt]
+    nonego_spawn_points:
+      - [5.8, 80.0, 0.1, 0.0, -90.0, 0.0]
+      - [12.2, 80.0, 0.1, 0.0, -90.0, 0.0]
+    lane_start_points:
+      - [5.8, 100, 0.1]
+    lane_end_points:
+      - [5.8, 0.0, 0.1]
+    lane_centres: [5.8, 9.0, 12.2, 15.6]
+    background_controller: idm_mobil
+    traffic_density: 15          # background vehicles per km per lane
+    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
+    spawn_gap_range: [12.0, 45.0]
+    aggressive_fraction: 0.25
+    swing_steer: 0.04
+    swing_amplitude: 0.2
+    swing_trigger_dist: 20
+    pid_coeffs: [0.03, 0.0, 0.03]
+    evt:
+      mode: none          # none | env | imagine | both
+      copula: logistic          # logistic (manuscript) | frank (sensitivity check)
+      threshold_method: stability   # stability | mrl | quantile
+      threshold_ttc: null       # null selects the threshold from the data
+      threshold_drac: null
+      update_interval: 2000     # environment steps between refits
+      buffer_size: 20000
+      min_sample: 500
+      min_exceedances: 50
+      risk_tolerance: 0.0     # u in Eq. (6)
+      indicator_mode: max  # max | longitudinal | planar
+      interaction_radius: 50.0
+      crash_drac: 8.5
+    reward:
+      desired_speed: 5
+      reward_overtake_dist: 8
+      early_lane_change_dist: 10
+      lane_width: 3.4
+      scales:
+        {
+          waypoint: 2.0,
+          speed: 0.5,
+          stay_same_lane: 0.3,
+          out_of_lane: 3.0,
+          collision: 30.0,
+          time: 0.0,
+          evt: 0.0,
+          exceeding: 200.0,
+          overtake: 200.0,
+          early_lane_change: 0.0,
+          destination_reached: 20.0,
+        }
+    terminal:
+      out_lane_thres: 5
+      time_limit: 500
+      left_lane_boundry: 3.7
+      right_lane_boundry: 17.7
+      lane_width: 3.4
+      terminal_dist: 100
+
+  dreamerv3:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    run.log_keys_video: [birdeye_wpt]
+    run.log_keys_max: "collision"
+    evt.mode: none
+    evt.imag_weight: 0.0
+
+  dreamerv2:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_kernels: [5, 5, 5, 6, 6]
+    train.log_keys_video: [birdeye_wpt]
+
+# Ablation: EVT penalty on realised transitions only.
+carla_overtake_evtenv:
+  env:
+    name: CarlaOvertakeEnv-v0
+    observation.enabled: [collision, birdeye_wpt]
+    nonego_spawn_points:
+      - [5.8, 80.0, 0.1, 0.0, -90.0, 0.0]
+      - [12.2, 80.0, 0.1, 0.0, -90.0, 0.0]
+    lane_start_points:
+      - [5.8, 100, 0.1]
+    lane_end_points:
+      - [5.8, 0.0, 0.1]
+    lane_centres: [5.8, 9.0, 12.2, 15.6]
+    background_controller: idm_mobil
+    traffic_density: 15          # background vehicles per km per lane
+    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
+    spawn_gap_range: [12.0, 45.0]
+    aggressive_fraction: 0.25
+    swing_steer: 0.04
+    swing_amplitude: 0.2
+    swing_trigger_dist: 20
+    pid_coeffs: [0.03, 0.0, 0.03]
+    evt:
+      mode: env          # none | env | imagine | both
+      copula: logistic          # logistic (manuscript) | frank (sensitivity check)
+      threshold_method: stability   # stability | mrl | quantile
+      threshold_ttc: null       # null selects the threshold from the data
+      threshold_drac: null
+      update_interval: 2000     # environment steps between refits
+      buffer_size: 20000
+      min_sample: 500
+      min_exceedances: 50
+      risk_tolerance: 0.0     # u in Eq. (6)
+      indicator_mode: max  # max | longitudinal | planar
+      interaction_radius: 50.0
+      crash_drac: 8.5
+    reward:
+      desired_speed: 5
+      reward_overtake_dist: 8
+      early_lane_change_dist: 10
+      lane_width: 3.4
+      scales:
+        {
+          waypoint: 2.0,
+          speed: 0.5,
+          stay_same_lane: 0.3,
+          out_of_lane: 3.0,
+          collision: 30.0,
+          time: 0.0,
+          evt: 3.0,
+          exceeding: 200.0,
+          overtake: 200.0,
+          early_lane_change: 0.0,
+          destination_reached: 20.0,
+        }
+    terminal:
+      out_lane_thres: 5
+      time_limit: 500
+      left_lane_boundry: 3.7
+      right_lane_boundry: 17.7
+      lane_width: 3.4
+      terminal_dist: 100
+
+  dreamerv3:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    run.log_keys_video: [birdeye_wpt]
+    run.log_keys_max: "collision"
+    evt.mode: env
+    evt.imag_weight: 0.0
+
+  dreamerv2:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_kernels: [5, 5, 5, 6, 6]
+    train.log_keys_video: [birdeye_wpt]
+
+# Ablation: EVT penalty inside latent imagination only.
+carla_overtake_evtimag:
+  env:
+    name: CarlaOvertakeEnv-v0
+    observation.enabled: [collision, birdeye_wpt]
+    nonego_spawn_points:
+      - [5.8, 80.0, 0.1, 0.0, -90.0, 0.0]
+      - [12.2, 80.0, 0.1, 0.0, -90.0, 0.0]
+    lane_start_points:
+      - [5.8, 100, 0.1]
+    lane_end_points:
+      - [5.8, 0.0, 0.1]
+    lane_centres: [5.8, 9.0, 12.2, 15.6]
+    background_controller: idm_mobil
+    traffic_density: 15          # background vehicles per km per lane
+    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
+    spawn_gap_range: [12.0, 45.0]
+    aggressive_fraction: 0.25
+    swing_steer: 0.04
+    swing_amplitude: 0.2
+    swing_trigger_dist: 20
+    pid_coeffs: [0.03, 0.0, 0.03]
+    evt:
+      mode: imagine          # none | env | imagine | both
+      copula: logistic          # logistic (manuscript) | frank (sensitivity check)
+      threshold_method: stability   # stability | mrl | quantile
+      threshold_ttc: null       # null selects the threshold from the data
+      threshold_drac: null
+      update_interval: 2000     # environment steps between refits
+      buffer_size: 20000
+      min_sample: 500
+      min_exceedances: 50
+      risk_tolerance: 0.0     # u in Eq. (6)
+      indicator_mode: max  # max | longitudinal | planar
+      interaction_radius: 50.0
+      crash_drac: 8.5
+    reward:
+      desired_speed: 5
+      reward_overtake_dist: 8
+      early_lane_change_dist: 10
+      lane_width: 3.4
+      scales:
+        {
+          waypoint: 2.0,
+          speed: 0.5,
+          stay_same_lane: 0.3,
+          out_of_lane: 3.0,
+          collision: 30.0,
+          time: 0.0,
+          evt: 0.0,
+          exceeding: 200.0,
+          overtake: 200.0,
+          early_lane_change: 0.0,
+          destination_reached: 20.0,
+        }
+    terminal:
+      out_lane_thres: 5
+      time_limit: 500
+      left_lane_boundry: 3.7
+      right_lane_boundry: 17.7
+      lane_width: 3.4
+      terminal_dist: 100
+
+  dreamerv3:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    run.log_keys_video: [birdeye_wpt]
+    run.log_keys_max: "collision"
+    evt.mode: imagine
+    evt.imag_weight: 3.0
+
+  dreamerv2:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_kernels: [5, 5, 5, 6, 6]
+    train.log_keys_video: [birdeye_wpt]
+
+# Sensitivity: Frank copula instead of the logistic one.
+carla_overtake_frank:
+  env:
+    name: CarlaOvertakeEnv-v0
+    observation.enabled: [collision, birdeye_wpt]
+    nonego_spawn_points:
+      - [5.8, 80.0, 0.1, 0.0, -90.0, 0.0]
+      - [12.2, 80.0, 0.1, 0.0, -90.0, 0.0]
+    lane_start_points:
+      - [5.8, 100, 0.1]
+    lane_end_points:
+      - [5.8, 0.0, 0.1]
+    lane_centres: [5.8, 9.0, 12.2, 15.6]
+    background_controller: idm_mobil
+    traffic_density: 15          # background vehicles per km per lane
+    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
+    spawn_gap_range: [12.0, 45.0]
+    aggressive_fraction: 0.25
+    swing_steer: 0.04
+    swing_amplitude: 0.2
+    swing_trigger_dist: 20
+    pid_coeffs: [0.03, 0.0, 0.03]
+    evt:
+      mode: both          # none | env | imagine | both
+      copula: frank          # logistic (manuscript) | frank (sensitivity check)
+      threshold_method: stability   # stability | mrl | quantile
+      threshold_ttc: null       # null selects the threshold from the data
+      threshold_drac: null
+      update_interval: 2000     # environment steps between refits
+      buffer_size: 20000
+      min_sample: 500
+      min_exceedances: 50
+      risk_tolerance: 0.0     # u in Eq. (6)
+      indicator_mode: max  # max | longitudinal | planar
+      interaction_radius: 50.0
+      crash_drac: 8.5
+    reward:
+      desired_speed: 5
+      reward_overtake_dist: 8
+      early_lane_change_dist: 10
+      lane_width: 3.4
+      scales:
+        {
+          waypoint: 2.0,
+          speed: 0.5,
+          stay_same_lane: 0.3,
+          out_of_lane: 3.0,
+          collision: 30.0,
+          time: 0.0,
+          evt: 3.0,
+          exceeding: 200.0,
+          overtake: 200.0,
+          early_lane_change: 0.0,
+          destination_reached: 20.0,
+        }
+    terminal:
+      out_lane_thres: 5
+      time_limit: 500
+      left_lane_boundry: 3.7
+      right_lane_boundry: 17.7
+      lane_width: 3.4
+      terminal_dist: 100
+
+  dreamerv3:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    run.log_keys_video: [birdeye_wpt]
+    run.log_keys_max: "collision"
+    evt.mode: both
+    evt.imag_weight: 3.0
+
+  dreamerv2:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_kernels: [5, 5, 5, 6, 6]
+    train.log_keys_video: [birdeye_wpt]
+
+# Sensitivity: fixed 90th-percentile threshold rule.
+carla_overtake_thrq:
+  env:
+    name: CarlaOvertakeEnv-v0
+    observation.enabled: [collision, birdeye_wpt]
+    nonego_spawn_points:
+      - [5.8, 80.0, 0.1, 0.0, -90.0, 0.0]
+      - [12.2, 80.0, 0.1, 0.0, -90.0, 0.0]
+    lane_start_points:
+      - [5.8, 100, 0.1]
+    lane_end_points:
+      - [5.8, 0.0, 0.1]
+    lane_centres: [5.8, 9.0, 12.2, 15.6]
+    background_controller: idm_mobil
+    traffic_density: 15          # background vehicles per km per lane
+    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
+    spawn_gap_range: [12.0, 45.0]
+    aggressive_fraction: 0.25
+    swing_steer: 0.04
+    swing_amplitude: 0.2
+    swing_trigger_dist: 20
+    pid_coeffs: [0.03, 0.0, 0.03]
+    evt:
+      mode: both          # none | env | imagine | both
+      copula: logistic          # logistic (manuscript) | frank (sensitivity check)
+      threshold_method: quantile   # stability | mrl | quantile
+      threshold_ttc: null       # null selects the threshold from the data
+      threshold_drac: null
+      update_interval: 2000     # environment steps between refits
+      buffer_size: 20000
+      min_sample: 500
+      min_exceedances: 50
+      risk_tolerance: 0.0     # u in Eq. (6)
+      indicator_mode: max  # max | longitudinal | planar
+      interaction_radius: 50.0
+      crash_drac: 8.5
+    reward:
+      desired_speed: 5
+      reward_overtake_dist: 8
+      early_lane_change_dist: 10
+      lane_width: 3.4
+      scales:
+        {
+          waypoint: 2.0,
+          speed: 0.5,
+          stay_same_lane: 0.3,
+          out_of_lane: 3.0,
+          collision: 30.0,
+          time: 0.0,
+          evt: 3.0,
+          exceeding: 200.0,
+          overtake: 200.0,
+          early_lane_change: 0.0,
+          destination_reached: 20.0,
+        }
+    terminal:
+      out_lane_thres: 5
+      time_limit: 500
+      left_lane_boundry: 3.7
+      right_lane_boundry: 17.7
+      lane_width: 3.4
+      terminal_dist: 100
+
+  dreamerv3:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    run.log_keys_video: [birdeye_wpt]
+    run.log_keys_max: "collision"
+    evt.mode: both
+    evt.imag_weight: 3.0
+
+  dreamerv2:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_kernels: [5, 5, 5, 6, 6]
+    train.log_keys_video: [birdeye_wpt]
+
+# Sensitivity: car-following conflict indicators only (reproduces the same-lane-only definition).
+carla_overtake_lonly:
+  env:
+    name: CarlaOvertakeEnv-v0
+    observation.enabled: [collision, birdeye_wpt]
+    nonego_spawn_points:
+      - [5.8, 80.0, 0.1, 0.0, -90.0, 0.0]
+      - [12.2, 80.0, 0.1, 0.0, -90.0, 0.0]
+    lane_start_points:
+      - [5.8, 100, 0.1]
+    lane_end_points:
+      - [5.8, 0.0, 0.1]
+    lane_centres: [5.8, 9.0, 12.2, 15.6]
+    background_controller: idm_mobil
+    traffic_density: 15          # background vehicles per km per lane
+    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
+    spawn_gap_range: [12.0, 45.0]
+    aggressive_fraction: 0.25
+    swing_steer: 0.04
+    swing_amplitude: 0.2
+    swing_trigger_dist: 20
+    pid_coeffs: [0.03, 0.0, 0.03]
+    evt:
+      mode: both          # none | env | imagine | both
+      copula: logistic          # logistic (manuscript) | frank (sensitivity check)
+      threshold_method: stability   # stability | mrl | quantile
+      threshold_ttc: null       # null selects the threshold from the data
+      threshold_drac: null
+      update_interval: 2000     # environment steps between refits
+      buffer_size: 20000
+      min_sample: 500
+      min_exceedances: 50
+      risk_tolerance: 0.0     # u in Eq. (6)
+      indicator_mode: longitudinal  # max | longitudinal | planar
+      interaction_radius: 50.0
+      crash_drac: 8.5
+    reward:
+      desired_speed: 5
+      reward_overtake_dist: 8
+      early_lane_change_dist: 10
+      lane_width: 3.4
+      scales:
+        {
+          waypoint: 2.0,
+          speed: 0.5,
+          stay_same_lane: 0.3,
+          out_of_lane: 3.0,
+          collision: 30.0,
+          time: 0.0,
+          evt: 3.0,
+          exceeding: 200.0,
+          overtake: 200.0,
+          early_lane_change: 0.0,
+          destination_reached: 20.0,
+        }
+    terminal:
+      out_lane_thres: 5
+      time_limit: 500
+      left_lane_boundry: 3.7
+      right_lane_boundry: 17.7
+      lane_width: 3.4
+      terminal_dist: 100
+
+  dreamerv3:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    run.log_keys_video: [birdeye_wpt]
+    run.log_keys_max: "collision"
+    evt.mode: both
+    evt.imag_weight: 3.0
+
+  dreamerv2:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_kernels: [5, 5, 5, 6, 6]
+    train.log_keys_video: [birdeye_wpt]
+
+# Sensitivity: EVT weight w_evt = 1.
+carla_overtake_w1:
+  env:
+    name: CarlaOvertakeEnv-v0
+    observation.enabled: [collision, birdeye_wpt]
+    nonego_spawn_points:
+      - [5.8, 80.0, 0.1, 0.0, -90.0, 0.0]
+      - [12.2, 80.0, 0.1, 0.0, -90.0, 0.0]
+    lane_start_points:
+      - [5.8, 100, 0.1]
+    lane_end_points:
+      - [5.8, 0.0, 0.1]
+    lane_centres: [5.8, 9.0, 12.2, 15.6]
+    background_controller: idm_mobil
+    traffic_density: 15          # background vehicles per km per lane
+    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
+    spawn_gap_range: [12.0, 45.0]
+    aggressive_fraction: 0.25
+    swing_steer: 0.04
+    swing_amplitude: 0.2
+    swing_trigger_dist: 20
+    pid_coeffs: [0.03, 0.0, 0.03]
+    evt:
+      mode: both          # none | env | imagine | both
+      copula: logistic          # logistic (manuscript) | frank (sensitivity check)
+      threshold_method: stability   # stability | mrl | quantile
+      threshold_ttc: null       # null selects the threshold from the data
+      threshold_drac: null
+      update_interval: 2000     # environment steps between refits
+      buffer_size: 20000
+      min_sample: 500
+      min_exceedances: 50
+      risk_tolerance: 0.0     # u in Eq. (6)
+      indicator_mode: max  # max | longitudinal | planar
+      interaction_radius: 50.0
+      crash_drac: 8.5
+    reward:
+      desired_speed: 5
+      reward_overtake_dist: 8
+      early_lane_change_dist: 10
+      lane_width: 3.4
+      scales:
+        {
+          waypoint: 2.0,
+          speed: 0.5,
+          stay_same_lane: 0.3,
+          out_of_lane: 3.0,
+          collision: 30.0,
+          time: 0.0,
+          evt: 1.0,
+          exceeding: 200.0,
+          overtake: 200.0,
+          early_lane_change: 0.0,
+          destination_reached: 20.0,
+        }
+    terminal:
+      out_lane_thres: 5
+      time_limit: 500
+      left_lane_boundry: 3.7
+      right_lane_boundry: 17.7
+      lane_width: 3.4
+      terminal_dist: 100
+
+  dreamerv3:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    run.log_keys_video: [birdeye_wpt]
+    run.log_keys_max: "collision"
+    evt.mode: both
+    evt.imag_weight: 1.0
+
+  dreamerv2:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_kernels: [5, 5, 5, 6, 6]
+    train.log_keys_video: [birdeye_wpt]
+
+# Sensitivity: EVT weight w_evt = 10.
+carla_overtake_w10:
+  env:
+    name: CarlaOvertakeEnv-v0
+    observation.enabled: [collision, birdeye_wpt]
+    nonego_spawn_points:
+      - [5.8, 80.0, 0.1, 0.0, -90.0, 0.0]
+      - [12.2, 80.0, 0.1, 0.0, -90.0, 0.0]
+    lane_start_points:
+      - [5.8, 100, 0.1]
+    lane_end_points:
+      - [5.8, 0.0, 0.1]
+    lane_centres: [5.8, 9.0, 12.2, 15.6]
+    background_controller: idm_mobil
+    traffic_density: 15          # background vehicles per km per lane
+    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
+    spawn_gap_range: [12.0, 45.0]
+    aggressive_fraction: 0.25
+    swing_steer: 0.04
+    swing_amplitude: 0.2
+    swing_trigger_dist: 20
+    pid_coeffs: [0.03, 0.0, 0.03]
+    evt:
+      mode: both          # none | env | imagine | both
+      copula: logistic          # logistic (manuscript) | frank (sensitivity check)
+      threshold_method: stability   # stability | mrl | quantile
+      threshold_ttc: null       # null selects the threshold from the data
+      threshold_drac: null
+      update_interval: 2000     # environment steps between refits
+      buffer_size: 20000
+      min_sample: 500
+      min_exceedances: 50
+      risk_tolerance: 0.0     # u in Eq. (6)
+      indicator_mode: max  # max | longitudinal | planar
+      interaction_radius: 50.0
+      crash_drac: 8.5
+    reward:
+      desired_speed: 5
+      reward_overtake_dist: 8
+      early_lane_change_dist: 10
+      lane_width: 3.4
+      scales:
+        {
+          waypoint: 2.0,
+          speed: 0.5,
+          stay_same_lane: 0.3,
+          out_of_lane: 3.0,
+          collision: 30.0,
+          time: 0.0,
+          evt: 10.0,
+          exceeding: 200.0,
+          overtake: 200.0,
+          early_lane_change: 0.0,
+          destination_reached: 20.0,
+        }
+    terminal:
+      out_lane_thres: 5
+      time_limit: 500
+      left_lane_boundry: 3.7
+      right_lane_boundry: 17.7
+      lane_width: 3.4
+      terminal_dist: 100
+
+  dreamerv3:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    run.log_keys_video: [birdeye_wpt]
+    run.log_keys_max: "collision"
+    evt.mode: both
+    evt.imag_weight: 10.0
+
+  dreamerv2:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_kernels: [5, 5, 5, 6, 6]
+    train.log_keys_video: [birdeye_wpt]
+
+# The originally published scenario: a single background vehicle driven by the scripted swing plus PID controller.  Kept so the previous results remain reproducible.
+carla_overtake_legacy:
+  env:
+    name: CarlaOvertakeEnv-v0
+    observation.enabled: [collision, birdeye_wpt]
+    nonego_spawn_points:
+      - [5.8, 80.0, 0.1, 0.0, -90.0, 0.0]
+      - [12.2, 80.0, 0.1, 0.0, -90.0, 0.0]
+    lane_start_points:
+      - [5.8, 100, 0.1]
+    lane_end_points:
+      - [5.8, 0.0, 0.1]
+    lane_centres: [5.8, 9.0, 12.2, 15.6]
+    background_controller: swing
+    traffic_density: 0          # background vehicles per km per lane
+    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
+    spawn_gap_range: [12.0, 45.0]
+    aggressive_fraction: 0.25
+    swing_steer: 0.04
+    swing_amplitude: 0.2
+    swing_trigger_dist: 20
+    pid_coeffs: [0.03, 0.0, 0.03]
+    evt:
+      mode: both          # none | env | imagine | both
+      copula: logistic          # logistic (manuscript) | frank (sensitivity check)
+      threshold_method: stability   # stability | mrl | quantile
+      threshold_ttc: null       # null selects the threshold from the data
+      threshold_drac: null
+      update_interval: 2000     # environment steps between refits
+      buffer_size: 20000
+      min_sample: 500
+      min_exceedances: 50
+      risk_tolerance: 0.0     # u in Eq. (6)
+      indicator_mode: max  # max | longitudinal | planar
+      interaction_radius: 50.0
+      crash_drac: 8.5
+    reward:
+      desired_speed: 5
+      reward_overtake_dist: 8
+      early_lane_change_dist: 10
+      lane_width: 3.4
+      scales:
+        {
+          waypoint: 2.0,
+          speed: 0.5,
+          stay_same_lane: 0.3,
+          out_of_lane: 3.0,
+          collision: 30.0,
+          time: 0.0,
+          evt: 3.0,
+          exceeding: 200.0,
+          overtake: 200.0,
+          early_lane_change: 0.0,
+          destination_reached: 20.0,
+        }
+    terminal:
+      out_lane_thres: 5
+      time_limit: 500
+      left_lane_boundry: 3.7
+      right_lane_boundry: 17.7
+      lane_width: 3.4
+      terminal_dist: 100
+
+  dreamerv3:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    run.log_keys_video: [birdeye_wpt]
+    run.log_keys_max: "collision"
+    evt.mode: both
+    evt.imag_weight: 3.0
+
+  dreamerv2:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_kernels: [5, 5, 5, 6, 6]
+    train.log_keys_video: [birdeye_wpt]
+
+# <<< ProSafeAV revision tasks (generated) <<<
+
