@@ -48,11 +48,32 @@ class Greedy(nj.Module):
                 reward = reward - w_evt * risk
             return reward
 
+        def aux_metrics(traj):
+            # Report the EVT tail risk actually incurred along the imagined
+            # rollout. Without this the penalty is invisible in the logs and
+            # there is no way to tell an EVT run from a non-EVT one except by
+            # its final behaviour.
+            if not use_imag or "safety" not in wm.heads or "evt_params" not in traj:
+                return {}
+            safety = wm.heads["safety"](traj).mean()
+            risk = evt_jax.evt_risk(safety, traj["evt_params"])
+            sev = evt_jax.severity(safety, traj["evt_params"])
+            out = {}
+            out.update(jaxutils.tensorstats(risk, "imag_evt_risk"))
+            out.update(jaxutils.tensorstats(sev, "imag_evt_severity"))
+            out.update(jaxutils.tensorstats(safety[..., 0], "imag_safety_ttc"))
+            out.update(jaxutils.tensorstats(safety[..., 1], "imag_safety_drac"))
+            out["imag_evt_active_frac"] = (risk > 0).mean()
+            out["imag_evt_penalty"] = (w_evt * risk).mean()
+            return out
+
         if config.critic_type == "vfunction":
             critics = {"extr": agent.VFunction(rewfn, config, name="critic")}
         else:
             raise NotImplementedError(config.critic_type)
-        self.ac = agent.ImagActorCritic(critics, {"extr": 1.0}, act_space, config, name="ac")
+        self.ac = agent.ImagActorCritic(
+            critics, {"extr": 1.0}, act_space, config, aux_metrics=aux_metrics, name="ac"
+        )
 
     def initial(self, batch_size):
         return self.ac.initial(batch_size)

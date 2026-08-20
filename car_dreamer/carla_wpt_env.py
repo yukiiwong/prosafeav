@@ -97,17 +97,22 @@ class CarlaWptEnv(CarlaBaseEnv):
         self.evt_update_interval = int(evt_cfg.get("update_interval", 2000))
         self.indicator_mode = evt_cfg.get("indicator_mode", "max")
         self.interaction_radius = float(evt_cfg.get("interaction_radius", 50.0))
+        # Beyond this there is no interaction to speak of.  Deliberately generous:
+        # the conflict threshold is chosen by the EVT model from the data, and a
+        # tight cap here would starve that choice of the distribution body.
+        self.ttc_cap = float(evt_cfg.get("ttc_cap", 30.0))
 
         self.evt_model = CopulaEVTModel(
             threshold_ttc=evt_cfg.get("threshold_ttc", None),
             threshold_drac=evt_cfg.get("threshold_drac", None),
             buffer_size=int(evt_cfg.get("buffer_size", 20000)),
-            min_sample=int(evt_cfg.get("min_sample", 500)),
-            min_exceedances=int(evt_cfg.get("min_exceedances", 50)),
+            min_sample=int(evt_cfg.get("min_sample", 300)),
+            min_exceedances=int(evt_cfg.get("min_exceedances", 30)),
             copula=evt_cfg.get("copula", "logistic"),
             threshold_method=evt_cfg.get("threshold_method", "stability"),
             risk_tolerance=float(evt_cfg.get("risk_tolerance", 0.0)),
             crash_drac=float(evt_cfg.get("crash_drac", DRAC_SCALE)),
+            ttc_clip=self.ttc_cap,
         )
         if evt_cfg.get("load_from"):
             self.evt_model.load(evt_cfg["load_from"], freeze=True)
@@ -157,6 +162,7 @@ class CarlaWptEnv(CarlaBaseEnv):
             self._world.carla_world,
             max_distance=self.interaction_radius,
             mode=self.indicator_mode,
+            ttc_cap=self.ttc_cap,
         )
 
     def _safety_observation(self, env_state=None):
@@ -230,7 +236,19 @@ class CarlaWptEnv(CarlaBaseEnv):
             self._total_steps += 1
             self.evt_model.add_sample(ttc, drac)
             if self.evt_update_interval > 0 and self._total_steps % self.evt_update_interval == 0:
-                self.evt_model.update_model()
+                if self.evt_model.update_model() and self.evt_model.margin_ttc.fitted:
+                    # The safety observation saturates at TTC_HORIZON, so a fitted
+                    # threshold beyond it can never be exceeded by the world
+                    # model's prediction and the imagination-side penalty would be
+                    # permanently zero while the environment-side one fires.
+                    thr = -self.evt_model.margin_ttc.u
+                    if thr > TTC_HORIZON:
+                        print(
+                            f"[EVT] warning: fitted TTC threshold {thr:.2f}s exceeds "
+                            f"the {TTC_HORIZON:.0f}s observation horizon; the "
+                            "imagination-side penalty cannot fire. Raise TTC_HORIZON "
+                            "or tighten evt.threshold_method."
+                        )
             evt_severity = self.evt_model.severity(ttc, drac)
             evt_tail_prob = self.evt_model.joint_exceedance_prob(ttc, drac)
             if self.evt_enabled:

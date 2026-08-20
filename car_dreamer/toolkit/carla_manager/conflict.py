@@ -207,7 +207,7 @@ def compute_conflict(
     max_distance=50.0,
     mode="max",
     lane_width=3.5,
-    ttc_cap=10.0,
+    ttc_cap=30.0,
 ):
     """Aggregate the pairwise indicators over the surrounding vehicles.
 
@@ -300,7 +300,8 @@ class ConflictIndicatorCalculator:
     MAX_DISTANCE = 50.0
 
     @staticmethod
-    def evaluate(ego_actor, carla_world, max_distance=None, mode="max", lane_width=3.5):
+    def evaluate(ego_actor, carla_world, max_distance=None, mode="max", lane_width=3.5,
+                 ttc_cap=30.0):
         max_distance = ConflictIndicatorCalculator.MAX_DISTANCE if max_distance is None else max_distance
         ego = state_from_carla(ego_actor)
         others = []
@@ -308,7 +309,10 @@ class ConflictIndicatorCalculator:
             if actor.id == ego_actor.id:
                 continue
             others.append(state_from_carla(actor))
-        return compute_conflict(ego, others, max_distance=max_distance, mode=mode, lane_width=lane_width)
+        return compute_conflict(
+            ego, others, max_distance=max_distance, mode=mode,
+            lane_width=lane_width, ttc_cap=ttc_cap,
+        )
 
     @staticmethod
     def get_ttc(ego_actor, carla_world, carla_map=None, max_distance=None):

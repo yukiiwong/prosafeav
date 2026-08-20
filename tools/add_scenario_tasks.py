@@ -41,11 +41,12 @@ EVT_BLOCK = {
     "threshold_drac": None,
     "update_interval": 2000,
     "buffer_size": 20000,
-    "min_sample": 500,
-    "min_exceedances": 50,
+    "min_sample": 300,
+    "min_exceedances": 30,
     "risk_tolerance": 0.0,
     "indicator_mode": "max",
     "interaction_radius": 50.0,
+    "ttc_cap": 30.0,
     "crash_drac": 8.5,
 }
 
@@ -116,6 +117,10 @@ def main():
 
         for backend in ("dreamerv3",):
             if backend in block:
+                block[backend]["run.log_keys_mean"] = (
+                    "(log_entropy|ttc|drac|evt_|speed_|conflict_|closing_|"
+                    "n_interacting|n_background|initial_gap|wpt_dis)"
+                )
                 block[backend]["evt.mode"] = "both"
                 block[backend]["evt.imag_weight"] = 3.0
 

@@ -254,7 +254,16 @@ class WorldModel(nj.Module):
     def report(self, data):
         state = self.initial(len(data["is_first"]))
         report = {}
-        report.update(self.loss(data, state)[-1][-1])
+        metrics = self.loss(data, state)[-1][-1]
+        # loss() deliberately keeps model_loss_raw at full (batch, length) shape
+        # for the replay prioritiser. Agent.train reduces it before logging, but
+        # this path did not, so the logger saw a rank-2 array, tried to write it
+        # as an image and killed its writer thread on every report.
+        metrics = {
+            k: (v.mean() if hasattr(v, "ndim") and v.ndim > 1 else v)
+            for k, v in metrics.items()
+        }
+        report.update(metrics)
         context, _ = self.rssm.observe(self.encoder(data)[:6, :5], data["action"][:6, :5], data["is_first"][:6, :5])
         start = {k: v[:, -1] for k, v in context.items()}
         recon = self.heads["decoder"](context)
@@ -288,7 +297,10 @@ class WorldModel(nj.Module):
 
 
 class ImagActorCritic(nj.Module):
-    def __init__(self, critics, scales, act_space, config):
+    def __init__(self, critics, scales, act_space, config, aux_metrics=None):
+        # aux_metrics: optional callable(traj) -> dict of extra scalars, used to
+        # surface quantities that live inside the imagined rollout and are
+        # otherwise invisible in the logs, such as the EVT tail risk.
         critics = {k: v for k, v in critics.items() if scales[k]}
         for key, scale in scales.items():
             assert not scale or key in critics, key
@@ -307,6 +319,7 @@ class ImagActorCritic(nj.Module):
         )
         self.retnorms = {k: jaxutils.Moments(**config.retnorm, name=f"retnorm_{k}") for k in critics}
         self.opt = jaxutils.Optimizer(name="actor_opt", **config.actor_opt)
+        self._aux_metrics = aux_metrics
 
     def initial(self, batch_size):
         return {}
@@ -330,6 +343,8 @@ class ImagActorCritic(nj.Module):
 
     def loss(self, traj):
         metrics = {}
+        if self._aux_metrics is not None:
+            metrics.update(self._aux_metrics(traj))
         advs = []
         total = sum(self.scales[k] for k in self.critics)
         for key, critic in self.critics.items():

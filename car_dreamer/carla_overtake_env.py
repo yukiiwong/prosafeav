@@ -6,6 +6,7 @@ import numpy as np
 from .carla_wpt_env import CarlaWptEnv
 from .toolkit import FixedEndingPlanner, get_vehicle_pos
 from .toolkit.carla_manager.conflict import state_from_carla
+from .toolkit.conflict_events import ConflictEventScheduler, apply_override
 from .toolkit.traffic_models import IDMMobilController
 
 
@@ -140,8 +141,24 @@ class CarlaOvertakeEnv(CarlaWptEnv):
         self.background_vehicles = []
         self.background_controllers = {}
         self.traffic_profile = {}
+        self.stopped_vehicle_id = None
+
+        # Injected pre-crash events.  Free-flowing IDM/MOBIL traffic keeps safe
+        # headways by construction and can run a whole episode without a single
+        # conflict, which leaves the EVT model with nothing to fit.
+        self.events = ConflictEventScheduler(
+            config=self._config.get("conflict_events", {}) or {},
+            rng=np.random.default_rng(self._rng.integers(0, 2**31 - 1)),
+            dt=float(self._config.world.fixed_delta_seconds),
+        )
         if self.background_controller == "idm_mobil":
             self._spawn_idm_traffic()
+            self.events.sample_episode(
+                candidate_ids=[v.id for v in self.background_vehicles],
+                lead_id=self.nonego.id,
+            )
+            if self.events.wants_stopped_vehicle():
+                self._spawn_stopped_vehicle()
 
         # Path planning
         ego_dest = self._config.lane_end_points
@@ -248,6 +265,25 @@ class CarlaOvertakeEnv(CarlaWptEnv):
         else:
             self.nonego.apply_control(self.get_nonego_vehicle_control())
 
+    def _spawn_stopped_vehicle(self):
+        """Place a stationary vehicle in a lane ahead, past the overtaking target.
+
+        The lead-vehicle-stopped pre-crash scenario: the ego must detect a
+        non-moving obstacle and change lane in time, which produces the sharpest
+        deceleration demands in the whole task.
+        """
+        y = float(self.nonego_spawn_point[1]) - float(self._rng.uniform(35.0, 70.0))
+        lane_x = float(self._rng.choice(self.lane_centres))
+        transform = carla.Transform(
+            carla.Location(x=lane_x, y=y, z=0.1), carla.Rotation(yaw=-90.0)
+        )
+        actor = self._world.spawn_actor(transform=transform)
+        if actor is None:
+            return
+        self.background_vehicles.append(actor)
+        self.stopped_vehicle_id = actor.id
+        # No controller: the vehicle simply never moves.
+
     def _apply_idm_controls(self):
         states = {}
         actors = [self.nonego] + list(self.background_vehicles)
@@ -258,8 +294,13 @@ class CarlaOvertakeEnv(CarlaWptEnv):
         ego_state = state_from_carla(self.ego)
         all_states = list(states.values()) + [ego_state]
 
+        overrides = self.events.update(self._time_step, ego_state, states)
+
         for actor in actors:
             if not actor.is_alive or actor.id not in states:
+                continue
+            if actor.id == getattr(self, "stopped_vehicle_id", None):
+                actor.apply_control(carla.VehicleControl(throttle=0.0, brake=1.0))
                 continue
             ctrl = self.background_controllers.get(actor.id)
             if ctrl is None:
@@ -267,6 +308,12 @@ class CarlaOvertakeEnv(CarlaWptEnv):
             state = states[actor.id]
             others = [s for s in all_states if s.id != state.id]
             acc, target_x, _ = ctrl.step(state, others)
+            # An injected event transiently overrides the calibrated behaviour;
+            # outside its window the vehicle drives normally again.
+            acc, target_x = apply_override(
+                overrides.get(actor.id), acc, target_x, ego_state.x,
+                lane_width=float(self._config.get("lane_width", 3.4)),
+            )
             actor.apply_control(self._to_carla_control(actor, state, acc, target_x))
 
     def _to_carla_control(self, actor, state, acc, target_x):
@@ -422,6 +469,10 @@ class CarlaOvertakeEnv(CarlaWptEnv):
                 # rather than only averaged over it.
                 "initial_gap": getattr(self, "initial_gap", 0.0),
                 "ego_start_lane_offset": getattr(self, "ego_start_lane_offset", 0),
+                # How many injected pre-crash events actually triggered, so the
+                # conflict rate can be attributed rather than guessed at.
+                "n_events_scheduled": len(self.events.events) if hasattr(self, "events") else 0,
+                "n_events_fired": self.events.n_fired if hasattr(self, "events") else 0,
             }
         )
 

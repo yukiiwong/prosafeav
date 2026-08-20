@@ -467,6 +467,14 @@ carla_overtake_prosafeav:
     ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
     ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
     ego_initial_speed_range: [2.0, 6.0]
+    # Injected pre-crash scenarios (Najm et al., NHTSA 2007 typology).
+    # Free-flowing IDM/MOBIL traffic keeps safe headways by construction and
+    # can run a whole episode without a conflict, leaving the EVT model with
+    # nothing to fit.  These transiently override the calibrated behaviour.
+    conflict_events:
+      lead_brake:      { prob: 0.5, trigger_distance: [12.0, 30.0], duration: [0.8, 2.0], intensity: [0.6, 1.0] }
+      cut_in:          { prob: 0.4, trigger_distance: [8.0, 22.0], duration: [1.5, 3.0], intensity: [0.6, 1.2] }
+      stopped_vehicle: { prob: 0.25, trigger_distance: [0.0, 0.0], duration: [0.0, 0.0], intensity: [0.0, 0.0] }
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -479,8 +487,9 @@ carla_overtake_prosafeav:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 500
-      min_exceedances: 50
+      min_sample: 300
+      min_exceedances: 30
+      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -548,6 +557,14 @@ carla_overtake_d05:
     ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
     ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
     ego_initial_speed_range: [2.0, 6.0]
+    # Injected pre-crash scenarios (Najm et al., NHTSA 2007 typology).
+    # Free-flowing IDM/MOBIL traffic keeps safe headways by construction and
+    # can run a whole episode without a conflict, leaving the EVT model with
+    # nothing to fit.  These transiently override the calibrated behaviour.
+    conflict_events:
+      lead_brake:      { prob: 0.5, trigger_distance: [12.0, 30.0], duration: [0.8, 2.0], intensity: [0.6, 1.0] }
+      cut_in:          { prob: 0.4, trigger_distance: [8.0, 22.0], duration: [1.5, 3.0], intensity: [0.6, 1.2] }
+      stopped_vehicle: { prob: 0.25, trigger_distance: [0.0, 0.0], duration: [0.0, 0.0], intensity: [0.0, 0.0] }
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -560,8 +577,9 @@ carla_overtake_d05:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 500
-      min_exceedances: 50
+      min_sample: 300
+      min_exceedances: 30
+      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -629,6 +647,14 @@ carla_overtake_d15:
     ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
     ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
     ego_initial_speed_range: [2.0, 6.0]
+    # Injected pre-crash scenarios (Najm et al., NHTSA 2007 typology).
+    # Free-flowing IDM/MOBIL traffic keeps safe headways by construction and
+    # can run a whole episode without a conflict, leaving the EVT model with
+    # nothing to fit.  These transiently override the calibrated behaviour.
+    conflict_events:
+      lead_brake:      { prob: 0.5, trigger_distance: [12.0, 30.0], duration: [0.8, 2.0], intensity: [0.6, 1.0] }
+      cut_in:          { prob: 0.4, trigger_distance: [8.0, 22.0], duration: [1.5, 3.0], intensity: [0.6, 1.2] }
+      stopped_vehicle: { prob: 0.25, trigger_distance: [0.0, 0.0], duration: [0.0, 0.0], intensity: [0.0, 0.0] }
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -641,8 +667,9 @@ carla_overtake_d15:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 500
-      min_exceedances: 50
+      min_sample: 300
+      min_exceedances: 30
+      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -710,6 +737,14 @@ carla_overtake_d30:
     ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
     ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
     ego_initial_speed_range: [2.0, 6.0]
+    # Injected pre-crash scenarios (Najm et al., NHTSA 2007 typology).
+    # Free-flowing IDM/MOBIL traffic keeps safe headways by construction and
+    # can run a whole episode without a conflict, leaving the EVT model with
+    # nothing to fit.  These transiently override the calibrated behaviour.
+    conflict_events:
+      lead_brake:      { prob: 0.5, trigger_distance: [12.0, 30.0], duration: [0.8, 2.0], intensity: [0.6, 1.0] }
+      cut_in:          { prob: 0.4, trigger_distance: [8.0, 22.0], duration: [1.5, 3.0], intensity: [0.6, 1.2] }
+      stopped_vehicle: { prob: 0.25, trigger_distance: [0.0, 0.0], duration: [0.0, 0.0], intensity: [0.0, 0.0] }
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -722,8 +757,9 @@ carla_overtake_d30:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 500
-      min_exceedances: 50
+      min_sample: 300
+      min_exceedances: 30
+      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -791,6 +827,14 @@ carla_overtake_d45:
     ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
     ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
     ego_initial_speed_range: [2.0, 6.0]
+    # Injected pre-crash scenarios (Najm et al., NHTSA 2007 typology).
+    # Free-flowing IDM/MOBIL traffic keeps safe headways by construction and
+    # can run a whole episode without a conflict, leaving the EVT model with
+    # nothing to fit.  These transiently override the calibrated behaviour.
+    conflict_events:
+      lead_brake:      { prob: 0.5, trigger_distance: [12.0, 30.0], duration: [0.8, 2.0], intensity: [0.6, 1.0] }
+      cut_in:          { prob: 0.4, trigger_distance: [8.0, 22.0], duration: [1.5, 3.0], intensity: [0.6, 1.2] }
+      stopped_vehicle: { prob: 0.25, trigger_distance: [0.0, 0.0], duration: [0.0, 0.0], intensity: [0.0, 0.0] }
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -803,8 +847,9 @@ carla_overtake_d45:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 500
-      min_exceedances: 50
+      min_sample: 300
+      min_exceedances: 30
+      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -872,6 +917,14 @@ carla_overtake_fov:
     ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
     ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
     ego_initial_speed_range: [2.0, 6.0]
+    # Injected pre-crash scenarios (Najm et al., NHTSA 2007 typology).
+    # Free-flowing IDM/MOBIL traffic keeps safe headways by construction and
+    # can run a whole episode without a conflict, leaving the EVT model with
+    # nothing to fit.  These transiently override the calibrated behaviour.
+    conflict_events:
+      lead_brake:      { prob: 0.5, trigger_distance: [12.0, 30.0], duration: [0.8, 2.0], intensity: [0.6, 1.0] }
+      cut_in:          { prob: 0.4, trigger_distance: [8.0, 22.0], duration: [1.5, 3.0], intensity: [0.6, 1.2] }
+      stopped_vehicle: { prob: 0.25, trigger_distance: [0.0, 0.0], duration: [0.0, 0.0], intensity: [0.0, 0.0] }
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -884,8 +937,9 @@ carla_overtake_fov:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 500
-      min_exceedances: 50
+      min_sample: 300
+      min_exceedances: 30
+      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -958,6 +1012,14 @@ carla_overtake_noisy:
     ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
     ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
     ego_initial_speed_range: [2.0, 6.0]
+    # Injected pre-crash scenarios (Najm et al., NHTSA 2007 typology).
+    # Free-flowing IDM/MOBIL traffic keeps safe headways by construction and
+    # can run a whole episode without a conflict, leaving the EVT model with
+    # nothing to fit.  These transiently override the calibrated behaviour.
+    conflict_events:
+      lead_brake:      { prob: 0.5, trigger_distance: [12.0, 30.0], duration: [0.8, 2.0], intensity: [0.6, 1.0] }
+      cut_in:          { prob: 0.4, trigger_distance: [8.0, 22.0], duration: [1.5, 3.0], intensity: [0.6, 1.2] }
+      stopped_vehicle: { prob: 0.25, trigger_distance: [0.0, 0.0], duration: [0.0, 0.0], intensity: [0.0, 0.0] }
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -970,8 +1032,9 @@ carla_overtake_noisy:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 500
-      min_exceedances: 50
+      min_sample: 300
+      min_exceedances: 30
+      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -1039,6 +1102,14 @@ carla_overtake_noevt:
     ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
     ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
     ego_initial_speed_range: [2.0, 6.0]
+    # Injected pre-crash scenarios (Najm et al., NHTSA 2007 typology).
+    # Free-flowing IDM/MOBIL traffic keeps safe headways by construction and
+    # can run a whole episode without a conflict, leaving the EVT model with
+    # nothing to fit.  These transiently override the calibrated behaviour.
+    conflict_events:
+      lead_brake:      { prob: 0.5, trigger_distance: [12.0, 30.0], duration: [0.8, 2.0], intensity: [0.6, 1.0] }
+      cut_in:          { prob: 0.4, trigger_distance: [8.0, 22.0], duration: [1.5, 3.0], intensity: [0.6, 1.2] }
+      stopped_vehicle: { prob: 0.25, trigger_distance: [0.0, 0.0], duration: [0.0, 0.0], intensity: [0.0, 0.0] }
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -1051,8 +1122,9 @@ carla_overtake_noevt:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 500
-      min_exceedances: 50
+      min_sample: 300
+      min_exceedances: 30
+      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -1120,6 +1192,14 @@ carla_overtake_evtenv:
     ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
     ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
     ego_initial_speed_range: [2.0, 6.0]
+    # Injected pre-crash scenarios (Najm et al., NHTSA 2007 typology).
+    # Free-flowing IDM/MOBIL traffic keeps safe headways by construction and
+    # can run a whole episode without a conflict, leaving the EVT model with
+    # nothing to fit.  These transiently override the calibrated behaviour.
+    conflict_events:
+      lead_brake:      { prob: 0.5, trigger_distance: [12.0, 30.0], duration: [0.8, 2.0], intensity: [0.6, 1.0] }
+      cut_in:          { prob: 0.4, trigger_distance: [8.0, 22.0], duration: [1.5, 3.0], intensity: [0.6, 1.2] }
+      stopped_vehicle: { prob: 0.25, trigger_distance: [0.0, 0.0], duration: [0.0, 0.0], intensity: [0.0, 0.0] }
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -1132,8 +1212,9 @@ carla_overtake_evtenv:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 500
-      min_exceedances: 50
+      min_sample: 300
+      min_exceedances: 30
+      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -1201,6 +1282,14 @@ carla_overtake_evtimag:
     ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
     ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
     ego_initial_speed_range: [2.0, 6.0]
+    # Injected pre-crash scenarios (Najm et al., NHTSA 2007 typology).
+    # Free-flowing IDM/MOBIL traffic keeps safe headways by construction and
+    # can run a whole episode without a conflict, leaving the EVT model with
+    # nothing to fit.  These transiently override the calibrated behaviour.
+    conflict_events:
+      lead_brake:      { prob: 0.5, trigger_distance: [12.0, 30.0], duration: [0.8, 2.0], intensity: [0.6, 1.0] }
+      cut_in:          { prob: 0.4, trigger_distance: [8.0, 22.0], duration: [1.5, 3.0], intensity: [0.6, 1.2] }
+      stopped_vehicle: { prob: 0.25, trigger_distance: [0.0, 0.0], duration: [0.0, 0.0], intensity: [0.0, 0.0] }
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -1213,8 +1302,9 @@ carla_overtake_evtimag:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 500
-      min_exceedances: 50
+      min_sample: 300
+      min_exceedances: 30
+      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -1282,6 +1372,14 @@ carla_overtake_frank:
     ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
     ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
     ego_initial_speed_range: [2.0, 6.0]
+    # Injected pre-crash scenarios (Najm et al., NHTSA 2007 typology).
+    # Free-flowing IDM/MOBIL traffic keeps safe headways by construction and
+    # can run a whole episode without a conflict, leaving the EVT model with
+    # nothing to fit.  These transiently override the calibrated behaviour.
+    conflict_events:
+      lead_brake:      { prob: 0.5, trigger_distance: [12.0, 30.0], duration: [0.8, 2.0], intensity: [0.6, 1.0] }
+      cut_in:          { prob: 0.4, trigger_distance: [8.0, 22.0], duration: [1.5, 3.0], intensity: [0.6, 1.2] }
+      stopped_vehicle: { prob: 0.25, trigger_distance: [0.0, 0.0], duration: [0.0, 0.0], intensity: [0.0, 0.0] }
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -1294,8 +1392,9 @@ carla_overtake_frank:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 500
-      min_exceedances: 50
+      min_sample: 300
+      min_exceedances: 30
+      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -1363,6 +1462,14 @@ carla_overtake_thrq:
     ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
     ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
     ego_initial_speed_range: [2.0, 6.0]
+    # Injected pre-crash scenarios (Najm et al., NHTSA 2007 typology).
+    # Free-flowing IDM/MOBIL traffic keeps safe headways by construction and
+    # can run a whole episode without a conflict, leaving the EVT model with
+    # nothing to fit.  These transiently override the calibrated behaviour.
+    conflict_events:
+      lead_brake:      { prob: 0.5, trigger_distance: [12.0, 30.0], duration: [0.8, 2.0], intensity: [0.6, 1.0] }
+      cut_in:          { prob: 0.4, trigger_distance: [8.0, 22.0], duration: [1.5, 3.0], intensity: [0.6, 1.2] }
+      stopped_vehicle: { prob: 0.25, trigger_distance: [0.0, 0.0], duration: [0.0, 0.0], intensity: [0.0, 0.0] }
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -1375,8 +1482,9 @@ carla_overtake_thrq:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 500
-      min_exceedances: 50
+      min_sample: 300
+      min_exceedances: 30
+      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -1444,6 +1552,14 @@ carla_overtake_lonly:
     ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
     ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
     ego_initial_speed_range: [2.0, 6.0]
+    # Injected pre-crash scenarios (Najm et al., NHTSA 2007 typology).
+    # Free-flowing IDM/MOBIL traffic keeps safe headways by construction and
+    # can run a whole episode without a conflict, leaving the EVT model with
+    # nothing to fit.  These transiently override the calibrated behaviour.
+    conflict_events:
+      lead_brake:      { prob: 0.5, trigger_distance: [12.0, 30.0], duration: [0.8, 2.0], intensity: [0.6, 1.0] }
+      cut_in:          { prob: 0.4, trigger_distance: [8.0, 22.0], duration: [1.5, 3.0], intensity: [0.6, 1.2] }
+      stopped_vehicle: { prob: 0.25, trigger_distance: [0.0, 0.0], duration: [0.0, 0.0], intensity: [0.0, 0.0] }
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -1456,8 +1572,9 @@ carla_overtake_lonly:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 500
-      min_exceedances: 50
+      min_sample: 300
+      min_exceedances: 30
+      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: longitudinal  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -1525,6 +1642,14 @@ carla_overtake_w1:
     ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
     ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
     ego_initial_speed_range: [2.0, 6.0]
+    # Injected pre-crash scenarios (Najm et al., NHTSA 2007 typology).
+    # Free-flowing IDM/MOBIL traffic keeps safe headways by construction and
+    # can run a whole episode without a conflict, leaving the EVT model with
+    # nothing to fit.  These transiently override the calibrated behaviour.
+    conflict_events:
+      lead_brake:      { prob: 0.5, trigger_distance: [12.0, 30.0], duration: [0.8, 2.0], intensity: [0.6, 1.0] }
+      cut_in:          { prob: 0.4, trigger_distance: [8.0, 22.0], duration: [1.5, 3.0], intensity: [0.6, 1.2] }
+      stopped_vehicle: { prob: 0.25, trigger_distance: [0.0, 0.0], duration: [0.0, 0.0], intensity: [0.0, 0.0] }
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -1537,8 +1662,9 @@ carla_overtake_w1:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 500
-      min_exceedances: 50
+      min_sample: 300
+      min_exceedances: 30
+      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -1606,6 +1732,14 @@ carla_overtake_w10:
     ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
     ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
     ego_initial_speed_range: [2.0, 6.0]
+    # Injected pre-crash scenarios (Najm et al., NHTSA 2007 typology).
+    # Free-flowing IDM/MOBIL traffic keeps safe headways by construction and
+    # can run a whole episode without a conflict, leaving the EVT model with
+    # nothing to fit.  These transiently override the calibrated behaviour.
+    conflict_events:
+      lead_brake:      { prob: 0.5, trigger_distance: [12.0, 30.0], duration: [0.8, 2.0], intensity: [0.6, 1.0] }
+      cut_in:          { prob: 0.4, trigger_distance: [8.0, 22.0], duration: [1.5, 3.0], intensity: [0.6, 1.2] }
+      stopped_vehicle: { prob: 0.25, trigger_distance: [0.0, 0.0], duration: [0.0, 0.0], intensity: [0.0, 0.0] }
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -1618,8 +1752,9 @@ carla_overtake_w10:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 500
-      min_exceedances: 50
+      min_sample: 300
+      min_exceedances: 30
+      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -1665,6 +1800,186 @@ carla_overtake_w10:
     decoder.cnn_kernels: [5, 5, 5, 6, 6]
     train.log_keys_video: [birdeye_wpt]
 
+# Conflict-rich: every episode injects a hard-braking lead, a cut-in and a stopped vehicle. Used to populate the EVT tail quickly and to test the policy against the pre-crash scenarios directly.
+carla_overtake_critical:
+  env:
+    name: CarlaOvertakeEnv-v0
+    observation.enabled: [collision, birdeye_wpt]
+    nonego_spawn_points:
+      - [5.8, 80.0, 0.1, 0.0, -90.0, 0.0]
+      - [12.2, 80.0, 0.1, 0.0, -90.0, 0.0]
+    lane_start_points:
+      - [5.8, 100, 0.1]
+    lane_end_points:
+      - [5.8, 0.0, 0.1]
+    lane_centres: [5.8, 9.0, 12.2, 15.6]
+    background_controller: idm_mobil
+    traffic_density: 25          # background vehicles per km per lane
+    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
+    spawn_gap_range: [12.0, 45.0]
+    aggressive_fraction: 0.25
+    ego_gap_range: [10.0, 25.0]          # initial ego-to-target gap (m)
+    ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
+    ego_initial_speed_range: [2.0, 6.0]
+    # Injected pre-crash scenarios (Najm et al., NHTSA 2007 typology).
+    # Free-flowing IDM/MOBIL traffic keeps safe headways by construction and
+    # can run a whole episode without a conflict, leaving the EVT model with
+    # nothing to fit.  These transiently override the calibrated behaviour.
+    conflict_events:
+      lead_brake:      { prob: 1.0, trigger_distance: [12.0, 30.0], duration: [0.8, 2.0], intensity: [0.6, 1.0] }
+      cut_in:          { prob: 1.0, trigger_distance: [8.0, 22.0], duration: [1.5, 3.0], intensity: [0.6, 1.2] }
+      stopped_vehicle: { prob: 0.6, trigger_distance: [0.0, 0.0], duration: [0.0, 0.0], intensity: [0.0, 0.0] }
+    swing_steer: 0.04
+    swing_amplitude: 0.2
+    swing_trigger_dist: 20
+    pid_coeffs: [0.03, 0.0, 0.03]
+    evt:
+      mode: both          # none | env | imagine | both
+      copula: logistic          # logistic (manuscript) | frank (sensitivity check)
+      threshold_method: stability   # stability | mrl | quantile
+      threshold_ttc: null       # null selects the threshold from the data
+      threshold_drac: null
+      update_interval: 2000     # environment steps between refits
+      buffer_size: 20000
+      min_sample: 300
+      min_exceedances: 30
+      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
+      risk_tolerance: 0.0     # u in Eq. (6)
+      indicator_mode: max  # max | longitudinal | planar
+      interaction_radius: 50.0
+      crash_drac: 8.5
+    reward:
+      desired_speed: 5
+      reward_overtake_dist: 8
+      early_lane_change_dist: 10
+      lane_width: 3.4
+      scales:
+        {
+          waypoint: 2.0,
+          speed: 0.5,
+          stay_same_lane: 0.3,
+          out_of_lane: 3.0,
+          collision: 30.0,
+          time: 0.0,
+          evt: 3.0,
+          exceeding: 200.0,
+          overtake: 200.0,
+          early_lane_change: 0.0,
+          destination_reached: 20.0,
+        }
+    terminal:
+      out_lane_thres: 5
+      time_limit: 500
+      left_lane_boundry: 3.7
+      right_lane_boundry: 17.7
+      lane_width: 3.4
+      terminal_dist: 100
+
+  dreamerv3:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    run.log_keys_video: [birdeye_wpt]
+    run.log_keys_max: "collision"
+    evt.mode: both
+    evt.imag_weight: 3.0
+
+  dreamerv2:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_kernels: [5, 5, 5, 6, 6]
+    train.log_keys_video: [birdeye_wpt]
+
+# Conflict-poor control: no injected events, sparse traffic. Shows how much of the EVT tail is due to the injected scenarios rather than to density.
+carla_overtake_calm:
+  env:
+    name: CarlaOvertakeEnv-v0
+    observation.enabled: [collision, birdeye_wpt]
+    nonego_spawn_points:
+      - [5.8, 80.0, 0.1, 0.0, -90.0, 0.0]
+      - [12.2, 80.0, 0.1, 0.0, -90.0, 0.0]
+    lane_start_points:
+      - [5.8, 100, 0.1]
+    lane_end_points:
+      - [5.8, 0.0, 0.1]
+    lane_centres: [5.8, 9.0, 12.2, 15.6]
+    background_controller: idm_mobil
+    traffic_density: 8          # background vehicles per km per lane
+    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
+    spawn_gap_range: [12.0, 45.0]
+    aggressive_fraction: 0.25
+    ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
+    ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
+    ego_initial_speed_range: [2.0, 6.0]
+    # Injected pre-crash scenarios (Najm et al., NHTSA 2007 typology).
+    # Free-flowing IDM/MOBIL traffic keeps safe headways by construction and
+    # can run a whole episode without a conflict, leaving the EVT model with
+    # nothing to fit.  These transiently override the calibrated behaviour.
+    conflict_events:
+      lead_brake:      { prob: 0.0, trigger_distance: [12.0, 30.0], duration: [0.8, 2.0], intensity: [0.6, 1.0] }
+      cut_in:          { prob: 0.0, trigger_distance: [8.0, 22.0], duration: [1.5, 3.0], intensity: [0.6, 1.2] }
+      stopped_vehicle: { prob: 0.0, trigger_distance: [0.0, 0.0], duration: [0.0, 0.0], intensity: [0.0, 0.0] }
+    swing_steer: 0.04
+    swing_amplitude: 0.2
+    swing_trigger_dist: 20
+    pid_coeffs: [0.03, 0.0, 0.03]
+    evt:
+      mode: both          # none | env | imagine | both
+      copula: logistic          # logistic (manuscript) | frank (sensitivity check)
+      threshold_method: stability   # stability | mrl | quantile
+      threshold_ttc: null       # null selects the threshold from the data
+      threshold_drac: null
+      update_interval: 2000     # environment steps between refits
+      buffer_size: 20000
+      min_sample: 300
+      min_exceedances: 30
+      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
+      risk_tolerance: 0.0     # u in Eq. (6)
+      indicator_mode: max  # max | longitudinal | planar
+      interaction_radius: 50.0
+      crash_drac: 8.5
+    reward:
+      desired_speed: 5
+      reward_overtake_dist: 8
+      early_lane_change_dist: 10
+      lane_width: 3.4
+      scales:
+        {
+          waypoint: 2.0,
+          speed: 0.5,
+          stay_same_lane: 0.3,
+          out_of_lane: 3.0,
+          collision: 30.0,
+          time: 0.0,
+          evt: 3.0,
+          exceeding: 200.0,
+          overtake: 200.0,
+          early_lane_change: 0.0,
+          destination_reached: 20.0,
+        }
+    terminal:
+      out_lane_thres: 5
+      time_limit: 500
+      left_lane_boundry: 3.7
+      right_lane_boundry: 17.7
+      lane_width: 3.4
+      terminal_dist: 100
+
+  dreamerv3:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    run.log_keys_video: [birdeye_wpt]
+    run.log_keys_max: "collision"
+    evt.mode: both
+    evt.imag_weight: 3.0
+
+  dreamerv2:
+    encoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_keys: "birdeye_wpt"
+    decoder.cnn_kernels: [5, 5, 5, 6, 6]
+    train.log_keys_video: [birdeye_wpt]
+
 # The originally published scenario: a single background vehicle driven by the scripted swing plus PID controller.  Kept so the previous results remain reproducible.
 carla_overtake_legacy:
   env:
@@ -1687,6 +2002,14 @@ carla_overtake_legacy:
     ego_gap_range: [20.0, 20.0]          # initial ego-to-target gap (m)
     ego_offset_lane_prob: 0.0   # chance the ego starts one lane over
     ego_initial_speed_range: [0.0, 0.0]
+    # Injected pre-crash scenarios (Najm et al., NHTSA 2007 typology).
+    # Free-flowing IDM/MOBIL traffic keeps safe headways by construction and
+    # can run a whole episode without a conflict, leaving the EVT model with
+    # nothing to fit.  These transiently override the calibrated behaviour.
+    conflict_events:
+      lead_brake:      { prob: 0.0, trigger_distance: [12.0, 30.0], duration: [0.8, 2.0], intensity: [0.6, 1.0] }
+      cut_in:          { prob: 0.0, trigger_distance: [8.0, 22.0], duration: [1.5, 3.0], intensity: [0.6, 1.2] }
+      stopped_vehicle: { prob: 0.0, trigger_distance: [0.0, 0.0], duration: [0.0, 0.0], intensity: [0.0, 0.0] }
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -1699,8 +2022,9 @@ carla_overtake_legacy:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 500
-      min_exceedances: 50
+      min_sample: 300
+      min_exceedances: 30
+      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -1747,6 +2071,10 @@ carla_overtake_legacy:
     train.log_keys_video: [birdeye_wpt]
 
 # <<< ProSafeAV revision tasks (generated) <<<
+
+
+
+
 
 
 
@@ -1808,11 +2136,12 @@ carla_four_lane_prosafeav:
       threshold_drac:
       update_interval: 2000
       buffer_size: 20000
-      min_sample: 500
-      min_exceedances: 50
+      min_sample: 300
+      min_exceedances: 30
       risk_tolerance: 0.0
       indicator_mode: max
       interaction_radius: 50.0
+      ttc_cap: 30.0
       crash_drac: 8.5
   dreamerv3:
     encoder.cnn_keys: birdeye_wpt
@@ -1821,6 +2150,7 @@ carla_four_lane_prosafeav:
     - camera
     - birdeye_wpt
     run.log_keys_max: collision
+    run.log_keys_mean: (log_entropy|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)
     evt.mode: both
     evt.imag_weight: 3.0
   dreamerv2:
@@ -1892,11 +2222,12 @@ carla_four_lane_prosafeav_dense:
       threshold_drac:
       update_interval: 2000
       buffer_size: 20000
-      min_sample: 500
-      min_exceedances: 50
+      min_sample: 300
+      min_exceedances: 30
       risk_tolerance: 0.0
       indicator_mode: max
       interaction_radius: 50.0
+      ttc_cap: 30.0
       crash_drac: 8.5
   dreamerv3:
     encoder.cnn_keys: birdeye_wpt
@@ -1905,6 +2236,7 @@ carla_four_lane_prosafeav_dense:
     - camera
     - birdeye_wpt
     run.log_keys_max: collision
+    run.log_keys_mean: (log_entropy|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)
     evt.mode: both
     evt.imag_weight: 3.0
   dreamerv2:
@@ -1975,11 +2307,12 @@ carla_lane_merge_prosafeav:
       threshold_drac:
       update_interval: 2000
       buffer_size: 20000
-      min_sample: 500
-      min_exceedances: 50
+      min_sample: 300
+      min_exceedances: 30
       risk_tolerance: 0.0
       indicator_mode: max
       interaction_radius: 50.0
+      ttc_cap: 30.0
       crash_drac: 8.5
   dreamerv3:
     encoder.cnn_keys: birdeye_wpt
@@ -1987,6 +2320,7 @@ carla_lane_merge_prosafeav:
     run.log_keys_video:
     - camera
     - birdeye_wpt
+    run.log_keys_mean: (log_entropy|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)
     evt.mode: both
     evt.imag_weight: 3.0
   dreamerv2:
@@ -2060,11 +2394,12 @@ carla_right_turn_prosafeav:
       threshold_drac:
       update_interval: 2000
       buffer_size: 20000
-      min_sample: 500
-      min_exceedances: 50
+      min_sample: 300
+      min_exceedances: 30
       risk_tolerance: 0.0
       indicator_mode: max
       interaction_radius: 50.0
+      ttc_cap: 30.0
       crash_drac: 8.5
   dreamerv3:
     encoder.cnn_keys: birdeye_wpt
@@ -2072,6 +2407,7 @@ carla_right_turn_prosafeav:
     run.log_keys_video:
     - camera
     - birdeye_wpt
+    run.log_keys_mean: (log_entropy|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)
     evt.mode: both
     evt.imag_weight: 3.0
   dreamerv2:
@@ -2160,11 +2496,12 @@ carla_roundabout_prosafeav:
       threshold_drac:
       update_interval: 2000
       buffer_size: 20000
-      min_sample: 500
-      min_exceedances: 50
+      min_sample: 300
+      min_exceedances: 30
       risk_tolerance: 0.0
       indicator_mode: max
       interaction_radius: 50.0
+      ttc_cap: 30.0
       crash_drac: 8.5
   dreamerv3:
     encoder.cnn_keys: birdeye_wpt
@@ -2172,6 +2509,7 @@ carla_roundabout_prosafeav:
     run.log_keys_video:
     - camera
     - birdeye_wpt
+    run.log_keys_mean: (log_entropy|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)
     evt.mode: both
     evt.imag_weight: 3.0
   dreamerv2:
@@ -2188,5 +2526,9 @@ carla_roundabout_prosafeav:
     - birdeye_wpt
 
 # <<< ProSafeAV cross-scenario tasks (generated) <<<
+
+
+
+
 
 

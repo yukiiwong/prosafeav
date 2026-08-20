@@ -30,38 +30,78 @@ EXTRA=("$@")
 
 : "${CARLA_ROOT:?CARLA_ROOT is not set; point it at the CARLA 0.9.15 install}"
 
+# A non-interactive shell does not run the conda hook, so bare `python` is not on
+# PATH and every run would die with 127 and be restarted forever.  Resolve the
+# interpreter explicitly, and fail immediately if it is missing rather than
+# discovering it one restart at a time.
+PYTHON="${PYTHON:-/home/yukai/.conda/envs/cardreamer/bin/python}"
+if [ ! -x "$PYTHON" ]; then
+    echo "python interpreter not found or not executable: $PYTHON" >&2
+    echo "set PYTHON=/path/to/env/bin/python" >&2
+    exit 1
+fi
+export PYTHONPATH="${PYTHONPATH:-}:$(cd "$(dirname "$0")/.." && pwd)"
+
 mkdir -p "$LOGDIR"
 LOG="${LOGDIR}/run.log"
 TM_PORT=$((CARLA_PORT + 6000))
 
 log() { echo "[$(date '+%F %T')] $*" >> "$LOG"; }
 
+# An open TCP port is not proof of a healthy simulator: a CARLA that is shutting
+# down still holds the socket, and a trainer started against it dies on the first
+# load_world.  Probe with a real client handshake instead.
+carla_ready() {
+    "$PYTHON" - "$CARLA_PORT" <<'PYEOF' >/dev/null 2>&1
+import sys
+import carla
+client = carla.Client("127.0.0.1", int(sys.argv[1]))
+client.set_timeout(8.0)
+client.get_server_version()
+PYEOF
+}
+
 launch_carla() {
-    if ! nc -z localhost "$CARLA_PORT" 2>/dev/null; then
-        log "starting CARLA on port ${CARLA_PORT} (gpu ${GPU})"
-        fuser -k "${CARLA_PORT}/tcp" >/dev/null 2>&1
-        CUDA_VISIBLE_DEVICES="$GPU" "$CARLA_ROOT/CarlaUE4.sh" \
-            -RenderOffScreen -carla-port="$CARLA_PORT" -benchmark -fps=10 \
-            >> "${LOGDIR}/carla.log" 2>&1 &
-        CARLA_PID=$!
-        local waited=0
-        while ! nc -z localhost "$CARLA_PORT" 2>/dev/null; do
-            sleep 2
-            waited=$((waited + 2))
-            if [ "$waited" -ge 180 ]; then
-                log "CARLA failed to come up within 180s"
-                return 1
-            fi
-        done
-        log "CARLA up after ${waited}s"
+    if carla_ready; then
+        return 0
     fi
+    log "starting CARLA on port ${CARLA_PORT} (gpu ${GPU})"
+    # Clear any half-dead server still holding the port before rebinding it.
+    [ -n "${CARLA_PID:-}" ] && kill -9 "$CARLA_PID" 2>/dev/null
+    fuser -k "${CARLA_PORT}/tcp" >/dev/null 2>&1
+    sleep 3
+    CUDA_VISIBLE_DEVICES="$GPU" "$CARLA_ROOT/CarlaUE4.sh" \
+        -RenderOffScreen -carla-port="$CARLA_PORT" -benchmark -fps=10 \
+        >> "${LOGDIR}/carla.log" 2>&1 &
+    CARLA_PID=$!
+    local waited=0
+    until carla_ready; do
+        sleep 5
+        waited=$((waited + 5))
+        if ! kill -0 "$CARLA_PID" 2>/dev/null; then
+            log "CARLA process died during startup; see carla.log"
+            return 1
+        fi
+        if [ "$waited" -ge 240 ]; then
+            log "CARLA did not answer a client handshake within 240s"
+            return 1
+        fi
+    done
+    log "CARLA ready after ${waited}s (pid ${CARLA_PID})"
     return 0
 }
 
 start_training() {
     launch_carla || return 1
     log "starting ${ENTRY}"
-    CUDA_VISIBLE_DEVICES="$GPU" python -u "$ENTRY" \
+    # CUDA_VISIBLE_DEVICES pins the trainer to one card: JAX otherwise
+    # preallocates on every visible GPU and would intrude on other users' work.
+    # XLA_PYTHON_CLIENT_MEM_FRACTION caps this job's share so several runs fit on
+    # the same card; jaxagent applies its 0.8 default only when this is unset,
+    # and 0.8 leaves no room for a second concurrent run.
+    CUDA_VISIBLE_DEVICES="$GPU" \
+    XLA_PYTHON_CLIENT_MEM_FRACTION="${MEM_FRACTION:-0.35}" \
+    "$PYTHON" -u "$ENTRY" \
         --env.world.carla_port "$CARLA_PORT" \
         --env.world.traffic.tm_seed "$CARLA_PORT" \
         --dreamerv3.logdir "$LOGDIR" \
@@ -103,6 +143,12 @@ while true; do
             cleanup
         fi
         log "trainer exited with ${code}; restart ${RESTARTS}/${MAX_RESTARTS}"
+        # A trainer crash is usually a simulator problem, so recycle CARLA rather
+        # than reconnecting a fresh trainer to a sick server.
+        [ -n "${CARLA_PID:-}" ] && kill -9 "$CARLA_PID" 2>/dev/null
+        fuser -k "${CARLA_PORT}/tcp" >/dev/null 2>&1
+        CARLA_PID=""
+        sleep 5
         start_training || { log "restart failed"; cleanup; }
     fi
 done

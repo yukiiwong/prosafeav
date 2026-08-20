@@ -135,7 +135,11 @@ class JAXAgent(embodied.Agent):
             print("Could not disable TensorFlow devices:", e)
         if not self.config.prealloc:
             os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"
-        os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "0.8"
+        # Cap, not a requirement: JAX grows up to this fraction of the card.
+        # setdefault rather than assignment so a launcher running several
+        # jobs on one GPU can lower it; hardcoding 0.8 made any second
+        # concurrent run fail to allocate.
+        os.environ.setdefault("XLA_PYTHON_CLIENT_MEM_FRACTION", "0.8")
         xla_flags = []
         if self.config.logical_cpus:
             count = self.config.logical_cpus

@@ -27,6 +27,14 @@ COMMON_ENV = """    name: CarlaOvertakeEnv-v0
     ego_gap_range: {ego_gap}          # initial ego-to-target gap (m)
     ego_offset_lane_prob: {ego_off}   # chance the ego starts one lane over
     ego_initial_speed_range: {ego_v0}
+    # Injected pre-crash scenarios (Najm et al., NHTSA 2007 typology).
+    # Free-flowing IDM/MOBIL traffic keeps safe headways by construction and
+    # can run a whole episode without a conflict, leaving the EVT model with
+    # nothing to fit.  These transiently override the calibrated behaviour.
+    conflict_events:
+      lead_brake:      {{ prob: {p_brake}, trigger_distance: [12.0, 30.0], duration: [0.8, 2.0], intensity: [0.6, 1.0] }}
+      cut_in:          {{ prob: {p_cutin}, trigger_distance: [8.0, 22.0], duration: [1.5, 3.0], intensity: [0.6, 1.2] }}
+      stopped_vehicle: {{ prob: {p_stop}, trigger_distance: [0.0, 0.0], duration: [0.0, 0.0], intensity: [0.0, 0.0] }}
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -39,8 +47,9 @@ COMMON_ENV = """    name: CarlaOvertakeEnv-v0
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 500
-      min_exceedances: 50
+      min_sample: 300
+      min_exceedances: 30
+      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
       risk_tolerance: {tol}     # u in Eq. (6)
       indicator_mode: {ind_mode}  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -93,11 +102,13 @@ TRAILER = """
 def task(name, comment, bev="birdeye_wpt", controller="idm_mobil", density=15,
          evt_mode="both", copula="logistic", thr_method="stability", tol=0.0,
          ind_mode="max", w_evt=3.0, w_imag=3.0, extra_env="",
-         ego_gap="[15.0, 45.0]", ego_off=0.3, ego_v0="[2.0, 6.0]"):
+         ego_gap="[15.0, 45.0]", ego_off=0.3, ego_v0="[2.0, 6.0]",
+         p_brake=0.5, p_cutin=0.4, p_stop=0.25):
     body = COMMON_ENV.format(
         bev=bev, controller=controller, density=density, evt_mode=evt_mode,
         copula=copula, thr_method=thr_method, tol=tol, ind_mode=ind_mode, w_evt=w_evt,
         ego_gap=ego_gap, ego_off=ego_off, ego_v0=ego_v0,
+        p_brake=p_brake, p_cutin=p_cutin, p_stop=p_stop,
     )
     trailer = TRAILER.format(bev=bev, evt_mode=evt_mode, w_imag=w_imag)
     return f"\n# {comment}\n{name}:\n  env:\n{body}{extra_env}{trailer}"
@@ -150,6 +161,18 @@ blocks = [
          "(reproduces the same-lane-only definition).", ind_mode="longitudinal"),
     task("carla_overtake_w1", "Sensitivity: EVT weight w_evt = 1.", w_evt=1.0, w_imag=1.0),
     task("carla_overtake_w10", "Sensitivity: EVT weight w_evt = 10.", w_evt=10.0, w_imag=10.0),
+    # ---- Conflict-rich variants -------------------------------------------- #
+    task("carla_overtake_critical",
+         "Conflict-rich: every episode injects a hard-braking lead, a cut-in and a "
+         "stopped vehicle. Used to populate the EVT tail quickly and to test the "
+         "policy against the pre-crash scenarios directly.",
+         density=25, p_brake=1.0, p_cutin=1.0, p_stop=0.6,
+         ego_gap="[10.0, 25.0]"),
+    task("carla_overtake_calm",
+         "Conflict-poor control: no injected events, sparse traffic. Shows how much "
+         "of the EVT tail is due to the injected scenarios rather than to density.",
+         density=8, p_brake=0.0, p_cutin=0.0, p_stop=0.0),
+
     # ---- Legacy ------------------------------------------------------------ #
     task(
         "carla_overtake_legacy",
@@ -157,7 +180,7 @@ blocks = [
         "scripted swing plus PID controller.  Kept so the previous results remain "
         "reproducible.",
         controller="swing", density=0, ego_gap="[20.0, 20.0]", ego_off=0.0,
-        ego_v0="[0.0, 0.0]",
+        ego_v0="[0.0, 0.0]", p_brake=0.0, p_cutin=0.0, p_stop=0.0,
     ),
 ]
 

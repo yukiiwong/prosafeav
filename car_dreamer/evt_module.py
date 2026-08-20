@@ -77,7 +77,9 @@ def select_threshold(
     :param candidates: candidate quantiles scanned by ``mrl`` / ``stability``.
     :param tol: relative tolerance for the stability criterion.
     :param min_exceedances: a threshold is only admissible if it leaves at least
-        this many exceedances.
+        this many exceedances.  The same figure gates the joint tail used for the
+        copula, which is the binding constraint in practice: each margin may
+        exceed comfortably while their intersection stays sparse.
     :return: ``(threshold, diagnostics_dict)``.  ``diagnostics_dict`` carries the
         full scan so a threshold-sensitivity figure can be produced for the paper.
     """
@@ -87,7 +89,10 @@ def select_threshold(
         return (float(np.quantile(data, quantile)) if data.size else 0.0), {}
 
     if candidates is None:
-        candidates = np.linspace(0.70, 0.98, 15)
+        # Capped at 0.95 rather than 0.98: a threshold that extreme leaves so few
+        # exceedances per margin that their intersection -- the joint tail the
+        # copula is fitted on -- is almost always empty.
+        candidates = np.linspace(0.70, 0.95, 15)
 
     if method == "quantile":
         return float(np.quantile(data, quantile)), {"method": "quantile", "q": quantile}
@@ -422,14 +427,14 @@ class CopulaEVTModel:
         threshold_ttc=None,
         threshold_drac=None,
         buffer_size=20000,
-        min_sample=500,
-        min_exceedances=50,
+        min_sample=300,
+        min_exceedances=30,
         copula="logistic",
         threshold_method="stability",
         risk_tolerance=0.0,
         crash_ttc=0.0,
         crash_drac=8.5,
-        ttc_clip=10.0,
+        ttc_clip=30.0,
         drac_saturation=8.5,
         contact_ttc=0.0,
         frozen=False,
@@ -497,7 +502,17 @@ class CopulaEVTModel:
 
     # -- fitting ---------------------------------------------------------- #
     def update_model(self, verbose=True):
-        if self.frozen or len(self.buffer) < self.min_sample:
+        if self.frozen:
+            return False
+        if len(self.buffer) < self.min_sample:
+            # Silence here used to make "no conflicts observed yet" and "the fit
+            # is broken" look identical from the logs.
+            if verbose:
+                print(
+                    f"[EVT] {len(self.buffer)}/{self.min_sample} conflict samples "
+                    f"buffered ({self.n_contact} contacts, {self.n_saturated} "
+                    f"saturated excluded); deferring the fit."
+                )
             return False
         arr = np.asarray(self.buffer, dtype=float)
         ok_t = self.margin_ttc.fit(
