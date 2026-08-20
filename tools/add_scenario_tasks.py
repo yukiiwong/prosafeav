@@ -118,7 +118,7 @@ def main():
         for backend in ("dreamerv3",):
             if backend in block:
                 block[backend]["run.log_keys_mean"] = (
-                    "(log_entropy|ttc|drac|evt_|speed_|conflict_|closing_|"
+                    "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|"
                     "n_interacting|n_background|initial_gap|wpt_dis)"
                 )
                 block[backend]["evt.mode"] = "both"

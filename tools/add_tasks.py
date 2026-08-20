@@ -88,6 +88,10 @@ TRAILER = """
     decoder.cnn_keys: "{bev}"
     run.log_keys_video: [{bev}]
     run.log_keys_max: "collision"
+    # Matched against observation keys. In eval mode the environment folds
+    # its info dict into the observations under an eval_ prefix, which is
+    # how the conflict and EVT quantities reach the result tables.
+    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: {evt_mode}
     evt.imag_weight: {w_imag}
 

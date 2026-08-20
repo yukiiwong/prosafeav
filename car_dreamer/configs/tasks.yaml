@@ -526,6 +526,10 @@ carla_overtake_prosafeav:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
+    # Matched against observation keys. In eval mode the environment folds
+    # its info dict into the observations under an eval_ prefix, which is
+    # how the conflict and EVT quantities reach the result tables.
+    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 3.0
 
@@ -616,6 +620,10 @@ carla_overtake_d05:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
+    # Matched against observation keys. In eval mode the environment folds
+    # its info dict into the observations under an eval_ prefix, which is
+    # how the conflict and EVT quantities reach the result tables.
+    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 3.0
 
@@ -706,6 +714,10 @@ carla_overtake_d15:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
+    # Matched against observation keys. In eval mode the environment folds
+    # its info dict into the observations under an eval_ prefix, which is
+    # how the conflict and EVT quantities reach the result tables.
+    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 3.0
 
@@ -796,6 +808,10 @@ carla_overtake_d30:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
+    # Matched against observation keys. In eval mode the environment folds
+    # its info dict into the observations under an eval_ prefix, which is
+    # how the conflict and EVT quantities reach the result tables.
+    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 3.0
 
@@ -886,6 +902,10 @@ carla_overtake_d45:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
+    # Matched against observation keys. In eval mode the environment folds
+    # its info dict into the observations under an eval_ prefix, which is
+    # how the conflict and EVT quantities reach the result tables.
+    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 3.0
 
@@ -981,6 +1001,10 @@ carla_overtake_fov:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
+    # Matched against observation keys. In eval mode the environment folds
+    # its info dict into the observations under an eval_ prefix, which is
+    # how the conflict and EVT quantities reach the result tables.
+    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 3.0
 
@@ -1071,6 +1095,10 @@ carla_overtake_noisy:
     decoder.cnn_keys: "birdeye_wpt_with_errors"
     run.log_keys_video: [birdeye_wpt_with_errors]
     run.log_keys_max: "collision"
+    # Matched against observation keys. In eval mode the environment folds
+    # its info dict into the observations under an eval_ prefix, which is
+    # how the conflict and EVT quantities reach the result tables.
+    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 3.0
 
@@ -1161,6 +1189,10 @@ carla_overtake_noevt:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
+    # Matched against observation keys. In eval mode the environment folds
+    # its info dict into the observations under an eval_ prefix, which is
+    # how the conflict and EVT quantities reach the result tables.
+    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: none
     evt.imag_weight: 0.0
 
@@ -1251,6 +1283,10 @@ carla_overtake_evtenv:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
+    # Matched against observation keys. In eval mode the environment folds
+    # its info dict into the observations under an eval_ prefix, which is
+    # how the conflict and EVT quantities reach the result tables.
+    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: env
     evt.imag_weight: 0.0
 
@@ -1341,6 +1377,10 @@ carla_overtake_evtimag:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
+    # Matched against observation keys. In eval mode the environment folds
+    # its info dict into the observations under an eval_ prefix, which is
+    # how the conflict and EVT quantities reach the result tables.
+    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: imagine
     evt.imag_weight: 3.0
 
@@ -1431,6 +1471,10 @@ carla_overtake_frank:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
+    # Matched against observation keys. In eval mode the environment folds
+    # its info dict into the observations under an eval_ prefix, which is
+    # how the conflict and EVT quantities reach the result tables.
+    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 3.0
 
@@ -1521,6 +1565,10 @@ carla_overtake_thrq:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
+    # Matched against observation keys. In eval mode the environment folds
+    # its info dict into the observations under an eval_ prefix, which is
+    # how the conflict and EVT quantities reach the result tables.
+    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 3.0
 
@@ -1611,6 +1659,10 @@ carla_overtake_lonly:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
+    # Matched against observation keys. In eval mode the environment folds
+    # its info dict into the observations under an eval_ prefix, which is
+    # how the conflict and EVT quantities reach the result tables.
+    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 3.0
 
@@ -1701,6 +1753,10 @@ carla_overtake_w1:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
+    # Matched against observation keys. In eval mode the environment folds
+    # its info dict into the observations under an eval_ prefix, which is
+    # how the conflict and EVT quantities reach the result tables.
+    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 1.0
 
@@ -1791,6 +1847,10 @@ carla_overtake_w10:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
+    # Matched against observation keys. In eval mode the environment folds
+    # its info dict into the observations under an eval_ prefix, which is
+    # how the conflict and EVT quantities reach the result tables.
+    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 10.0
 
@@ -1881,6 +1941,10 @@ carla_overtake_critical:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
+    # Matched against observation keys. In eval mode the environment folds
+    # its info dict into the observations under an eval_ prefix, which is
+    # how the conflict and EVT quantities reach the result tables.
+    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 3.0
 
@@ -1971,6 +2035,10 @@ carla_overtake_calm:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
+    # Matched against observation keys. In eval mode the environment folds
+    # its info dict into the observations under an eval_ prefix, which is
+    # how the conflict and EVT quantities reach the result tables.
+    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 3.0
 
@@ -2061,6 +2129,10 @@ carla_overtake_legacy:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
+    # Matched against observation keys. In eval mode the environment folds
+    # its info dict into the observations under an eval_ prefix, which is
+    # how the conflict and EVT quantities reach the result tables.
+    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 3.0
 
@@ -2071,6 +2143,8 @@ carla_overtake_legacy:
     train.log_keys_video: [birdeye_wpt]
 
 # <<< ProSafeAV revision tasks (generated) <<<
+
+
 
 
 
@@ -2150,7 +2224,7 @@ carla_four_lane_prosafeav:
     - camera
     - birdeye_wpt
     run.log_keys_max: collision
-    run.log_keys_mean: (log_entropy|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)
+    run.log_keys_mean: (log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)
     evt.mode: both
     evt.imag_weight: 3.0
   dreamerv2:
@@ -2236,7 +2310,7 @@ carla_four_lane_prosafeav_dense:
     - camera
     - birdeye_wpt
     run.log_keys_max: collision
-    run.log_keys_mean: (log_entropy|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)
+    run.log_keys_mean: (log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)
     evt.mode: both
     evt.imag_weight: 3.0
   dreamerv2:
@@ -2320,7 +2394,7 @@ carla_lane_merge_prosafeav:
     run.log_keys_video:
     - camera
     - birdeye_wpt
-    run.log_keys_mean: (log_entropy|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)
+    run.log_keys_mean: (log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)
     evt.mode: both
     evt.imag_weight: 3.0
   dreamerv2:
@@ -2407,7 +2481,7 @@ carla_right_turn_prosafeav:
     run.log_keys_video:
     - camera
     - birdeye_wpt
-    run.log_keys_mean: (log_entropy|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)
+    run.log_keys_mean: (log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)
     evt.mode: both
     evt.imag_weight: 3.0
   dreamerv2:
@@ -2509,7 +2583,7 @@ carla_roundabout_prosafeav:
     run.log_keys_video:
     - camera
     - birdeye_wpt
-    run.log_keys_mean: (log_entropy|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)
+    run.log_keys_mean: (log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)
     evt.mode: both
     evt.imag_weight: 3.0
   dreamerv2:
@@ -2526,6 +2600,8 @@ carla_roundabout_prosafeav:
     - birdeye_wpt
 
 # <<< ProSafeAV cross-scenario tasks (generated) <<<
+
+
 
 
 
