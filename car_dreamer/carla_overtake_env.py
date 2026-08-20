@@ -99,11 +99,43 @@ class CarlaOvertakeEnv(CarlaWptEnv):
         self.ego_src = self._config.lane_start_points[
             int(self._rng.integers(len(self._config.lane_start_points)))
         ]
+
+        # Randomise where the ego vehicle starts relative to the vehicle it has to
+        # overtake.  Previously the pair always began in the same lane exactly
+        # 20 m apart, so the policy could learn a single fixed manoeuvre; reviewer
+        # 1 comment 6 asks precisely about this.  The gap is drawn from
+        # ``ego_gap_range`` and, with probability ``ego_offset_lane_prob``, the ego
+        # starts one lane over so it must merge back before overtaking.
+        gap_range = self._config.get("ego_gap_range", [20.0, 20.0])
+        gap = float(self._rng.uniform(*gap_range))
+        ego_y = self.nonego_spawn_point[1] + gap  # +y is behind, the road runs along -y
+
+        ego_x = self.nonego_spawn_point[0]
+        self.ego_start_lane_offset = 0
+        if float(self._rng.random()) < float(self._config.get("ego_offset_lane_prob", 0.0)):
+            lane_idx = int(np.argmin([abs(ego_x - c) for c in self.lane_centres]))
+            choices = [i for i in (lane_idx - 1, lane_idx + 1) if 0 <= i < len(self.lane_centres)]
+            if choices:
+                new_idx = int(self._rng.choice(choices))
+                self.ego_start_lane_offset = new_idx - lane_idx
+                ego_x = self.lane_centres[new_idx]
+
         ego_transform = carla.Transform(
-            carla.Location(x=self.nonego_spawn_point[0], y=self.ego_src[1], z=self.ego_src[2]),
+            carla.Location(x=float(ego_x), y=float(ego_y), z=self.ego_src[2]),
             carla.Rotation(yaw=-90),
-        )  # set x that always behind nonego
+        )  # always behind the vehicle to be overtaken
         self.ego = self._world.spawn_actor(transform=ego_transform)
+        self.initial_gap = gap
+
+        # A non-zero initial speed avoids every episode starting from standstill,
+        # which would make the early conflict distribution unrepresentative.
+        v0_range = self._config.get("ego_initial_speed_range", [0.0, 0.0])
+        v_init = float(self._rng.uniform(*v0_range))
+        if v_init > 0:
+            try:
+                self.ego.set_target_velocity(carla.Vector3D(0.0, self.FORWARD_AXIS * v_init, 0.0))
+            except Exception:
+                pass
 
         self.background_vehicles = []
         self.background_controllers = {}
@@ -386,6 +418,10 @@ class CarlaOvertakeEnv(CarlaWptEnv):
                 "r_overtake": r_overtake,
                 "p_early_lane_change": p_early_lane_change,
                 "n_background": len(getattr(self, "background_vehicles", [])),
+                # Logged so results can be stratified by the initial geometry
+                # rather than only averaged over it.
+                "initial_gap": getattr(self, "initial_gap", 0.0),
+                "ego_start_lane_offset": getattr(self, "ego_start_lane_offset", 0),
             }
         )
 

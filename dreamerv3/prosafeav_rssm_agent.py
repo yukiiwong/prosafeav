@@ -14,6 +14,9 @@ import torch.optim as optim
 import numpy as np
 
 
+from evt_torch import EVTImaginationPenalty, SafetyHead
+
+
 class LightweightEncoder(nn.Module):
     """Lightweight encoder for observations"""
     def __init__(self, obs_dim, hidden_dim=64):
@@ -165,18 +168,24 @@ class ProSafeAVRSSMAgent:
         self.rssm = LightweightRSSM(self.stochastic_dim, self.deterministic_dim, self.act_dim).to(self.device)
         self.decoder = LightweightDecoder(self.stochastic_dim + self.deterministic_dim, self.obs_dim).to(self.device)
         self.reward_model = LightweightRewardModel(self.stochastic_dim + self.deterministic_dim).to(self.device)
-        self.policy = LightweightPolicy(self.stochastic_dim + self.deterministic_dim, self.act_dim).to(self.device)
+        self.policy_net = LightweightPolicy(self.stochastic_dim + self.deterministic_dim, self.act_dim).to(self.device)
+        # ProSafeAV: predicts the normalised (TTC, DRAC) pair from the latent
+        # state so the EVT tail risk can be evaluated on imagined rollouts.
+        self.safety_head = SafetyHead(self.stochastic_dim + self.deterministic_dim, hidden=64).to(self.device)
+        self.evt = EVTImaginationPenalty(config)
+        self._last_batch_size = 1
 
         # Optimizers
         self.model_optimizer = optim.Adam(
             list(self.encoder.parameters()) +
             list(self.rssm.parameters()) +
             list(self.decoder.parameters()) +
-            list(self.reward_model.parameters()),
+            list(self.reward_model.parameters()) +
+            list(self.safety_head.parameters()),
             lr=config.get('model_lr', 1e-3)
         )
         self.policy_optimizer = optim.Adam(
-            self.policy.parameters(),
+            self.policy_net.parameters(),
             lr=config.get('policy_lr', 3e-4)
         )
 
@@ -186,6 +195,28 @@ class ProSafeAVRSSMAgent:
 
         # State
         self.rssm_state = None
+
+
+    # ------------------------------------------------------------------ #
+    # ProSafeAV EVT helpers
+    # ------------------------------------------------------------------ #
+    def _evt_batch(self, batch, key, dim, default=0.0):
+        """Pull an auxiliary observation out of the batch as ``[B, dim]``.
+
+        The environment emits ``safety`` (2-D) and ``evt_params`` (10-D) at every
+        step.  Batches may arrive as ``[B, dim]`` or ``[B, T, dim]``; in the
+        latter case the first timestep is used, because the EVT parameters are
+        constant along a rollout by construction and the safety target is
+        aligned with the same step as the observation.
+        """
+        import numpy as _np
+
+        if key not in batch:
+            return torch.full((self._last_batch_size, dim), default, device=self.device)
+        value = torch.tensor(_np.asarray(batch[key]), dtype=torch.float32, device=self.device)
+        if value.dim() == 3:
+            value = value[:, 0]
+        return value.reshape(-1, dim)[: self._last_batch_size]
 
     def _preprocess_obs(self, obs):
         x = obs[self.obs_key]
@@ -214,7 +245,7 @@ class ProSafeAVRSSMAgent:
             h, z, _, _, _, _ = self.rssm.observe(h, z, action_dummy, embed)
 
             # Get action from policy
-            logits = self.policy(h, z)
+            logits = self.policy_net(h, z)
 
             if mode == 'eval':
                 action_idx = logits.argmax(dim=-1)
@@ -259,8 +290,14 @@ class ProSafeAVRSSMAgent:
         pred_reward = self.reward_model(h, z).squeeze(-1)
         reward_loss = F.mse_loss(pred_reward, rewards)
 
+        # ProSafeAV: regress the surrogate safety measures from the latent state.
+        self._last_batch_size = h.size(0)
+        safety_target = self._evt_batch(batch, 'safety', 2)
+        pred_safety = self.safety_head(torch.cat([h, z], dim=-1))
+        safety_loss = F.mse_loss(pred_safety, safety_target)
+
         # Total model loss
-        model_loss = recon_loss + self.kl_weight * kl_loss + reward_loss
+        model_loss = recon_loss + self.kl_weight * kl_loss + reward_loss + safety_loss
 
         self.model_optimizer.zero_grad()
         model_loss.backward()
@@ -268,7 +305,8 @@ class ProSafeAVRSSMAgent:
             list(self.encoder.parameters()) +
             list(self.rssm.parameters()) +
             list(self.decoder.parameters()) +
-            list(self.reward_model.parameters()),
+            list(self.reward_model.parameters()) +
+            list(self.safety_head.parameters()),
             10.0
         )
         self.model_optimizer.step()
@@ -280,11 +318,13 @@ class ProSafeAVRSSMAgent:
             h_start, z_start, _, _, _, _ = self.rssm.observe(h_start, z_start, actions, embed_start)
 
         imagined_reward = 0
+        imagined_risk = 0
+        evt_params = self._evt_batch(batch, 'evt_params', 10)
         h_imag, z_imag = h_start.detach(), z_start.detach()
 
         for _ in range(self.imagination_horizon):
             # Get action from policy
-            action_logits = self.policy(h_imag, z_imag)
+            action_logits = self.policy_net(h_imag, z_imag)
             action_probs = F.softmax(action_logits, dim=-1)
             dist = torch.distributions.Categorical(action_probs)
             action_idx = dist.sample()
@@ -295,7 +335,11 @@ class ProSafeAVRSSMAgent:
 
             # Predict reward
             reward = self.reward_model(h_imag, z_imag).squeeze(-1)
-            imagined_reward += reward
+
+            # ProSafeAV: subtract the EVT tail risk of the *imagined* state.
+            risk = self.evt.risk(self.safety_head(torch.cat([h_imag, z_imag], dim=-1)), evt_params)
+            imagined_risk = imagined_risk + risk
+            imagined_reward += reward - self.evt.weight * risk
 
         # Policy loss: maximize imagined reward
         policy_loss = -imagined_reward.mean()
@@ -310,6 +354,8 @@ class ProSafeAVRSSMAgent:
             'recon_loss': recon_loss.item(),
             'kl_loss': kl_loss.item(),
             'reward_loss': reward_loss.item(),
+            'safety_loss': safety_loss.item(),
+            'imag_evt_risk': float(imagined_risk.mean()) if torch.is_tensor(imagined_risk) else 0.0,
             'policy_loss': policy_loss.item(),
         }
 
@@ -325,7 +371,8 @@ class ProSafeAVRSSMAgent:
             'rssm': self.rssm.state_dict(),
             'decoder': self.decoder.state_dict(),
             'reward_model': self.reward_model.state_dict(),
-            'policy': self.policy.state_dict(),
+            'policy': self.policy_net.state_dict(),
+            'safety_head': self.safety_head.state_dict(),
         }
 
     def load(self, data):
@@ -333,7 +380,9 @@ class ProSafeAVRSSMAgent:
         self.rssm.load_state_dict(data['rssm'])
         self.decoder.load_state_dict(data['decoder'])
         self.reward_model.load_state_dict(data['reward_model'])
-        self.policy.load_state_dict(data['policy'])
+        self.policy_net.load_state_dict(data['policy'])
+        if 'safety_head' in data:
+            self.safety_head.load_state_dict(data['safety_head'])
 
     def sync(self):
         pass

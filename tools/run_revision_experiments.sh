@@ -11,13 +11,15 @@
 #
 # Groups map onto the reviewer comments:
 #
-#   main      the headline ProSafeAV result on the new stochastic scenario
-#   density   R1.6  generalisation across traffic density
-#   perception R1.3 BEV obtainable from onboard perception (FOV limited, noisy)
-#   wm        R1.2  cross-architecture world model comparison
-#   ablation  R2/R3 where the EVT term acts, and the world-model capacity sweep
-#   sensitivity  R2.2/R2.3  copula family, threshold rule, EVT weight
-#   seeds     three seeds per headline configuration
+#   main       the headline ProSafeAV result on the new stochastic scenario
+#   density    R1.6  generalisation across traffic density
+#   scenario   R1.6  generalisation across conflict geometry (5 scenarios)
+#   perception R1.3  BEV obtainable from onboard perception (FOV limited, noisy)
+#   wm         R1.2  cross-architecture world model comparison
+#   modelfree  Table I model-free baselines
+#   ablation   R2/R3 where the EVT term acts
+#   sensitivity R2.2/R2.3  copula family, threshold rule, EVT weight
+#   legacy     the originally published scenario, for reproduction
 #
 # Each configuration should be run with THREE seeds before anything is reported;
 # the tables in the manuscript quote mean +/- standard error over seeds.
@@ -41,6 +43,10 @@ while [[ $# -gt 0 ]]; do
 done
 
 port_counter=0
+
+# ``launch`` runs the DreamerV3 backbone through train_prosafeav.sh.
+# ``launch_py`` runs one of the standalone PyTorch agents, which have their own
+# entry points rather than going through that script.
 launch() {
   local group="$1" name="$2" task="$3"; shift 3
   local extra="$*"
@@ -65,6 +71,31 @@ launch() {
   done
 }
 
+launch_py() {
+  local group="$1" name="$2" entry="$3" task="$4"; shift 4
+  local extra="$*"
+  if [[ "$GROUP" != "all" && "$GROUP" != "$group" ]]; then return; fi
+  for seed in $SEEDS; do
+    local port=$((BASE_PORT + port_counter * 4))
+    local gpu=${GPUS[$((port_counter % ${#GPUS[@]}))]}
+    port_counter=$((port_counter + 1))
+    local logdir="${LOGROOT}/${name}_s${seed}"
+    local cmd="CUDA_VISIBLE_DEVICES=${gpu} python dreamerv3/${entry} \
+--task ${task} \
+--dreamerv3.logdir ${logdir} \
+--dreamerv3.seed ${seed} \
+--dreamerv3.run.steps ${STEPS} \
+--env.world.carla_port ${port} ${extra}"
+    if [[ "$MODE" == "print" ]]; then
+      echo "[${group}] ${cmd}"
+    else
+      echo ">>> launching ${name} seed ${seed} on port ${port} gpu ${gpu}"
+      mkdir -p "${logdir}"
+      (cd "${REPO}" && eval "${cmd}")
+    fi
+  done
+}
+
 # --- headline result ------------------------------------------------------- #
 launch main prosafeav carla_overtake_prosafeav
 
@@ -79,17 +110,37 @@ done
 launch perception prosafeav_fov   carla_overtake_fov
 launch perception prosafeav_noisy carla_overtake_noisy
 
+# --- R1.6 generalisation across conflict geometry -------------------------- #
+# Density alone keeps the same conflict type throughout.  These five scenarios
+# span rear-end, merging, crossing and circulating conflicts.
+launch scenario prosafeav_fourlane       carla_four_lane_prosafeav
+launch scenario prosafeav_fourlane_dense carla_four_lane_prosafeav_dense
+launch scenario prosafeav_merge          carla_lane_merge_prosafeav
+launch scenario prosafeav_rightturn      carla_right_turn_prosafeav
+launch scenario prosafeav_roundabout     carla_roundabout_prosafeav
+
 # --- R1.2 cross-architecture world models ---------------------------------- #
-# DreamerV3 backbone at three capacities.  "rssm.classes 0" replaces the
-# categorical latent with a diagonal Gaussian, which is the DreamerV2-style
-# state space; it is a genuinely different latent family, not merely a smaller net.
+# Same latent family, different capacity.  "rssm.classes 0" swaps the categorical
+# latent for a diagonal Gaussian, i.e. the DreamerV2-style state space.
 launch wm prosafeav_dv3    carla_overtake_prosafeav
-launch wm prosafeav_rssm_s carla_overtake_prosafeav \
+launch wm prosafeav_dv3_s  carla_overtake_prosafeav \
   --dreamerv3.rssm.deter 256 --dreamerv3.rssm.stoch 16
 launch wm prosafeav_gauss  carla_overtake_prosafeav \
   --dreamerv3.rssm.classes 0
-# DreamerV2 backbone (separate entry point, kept for reference):
-#   python dreamerv2/train.py --task carla_overtake_prosafeav ...
+
+# Genuinely different architectures, each carrying the same EVT coupling.
+launch_py wm prosafeav_rssm        train_prosafeav_rssm.py          carla_overtake_prosafeav
+launch_py wm prosafeav_det         train_prosafeav_deterministic.py carla_overtake_prosafeav
+launch_py wm prosafeav_transformer train_transformer_wm.py          carla_overtake_prosafeav
+launch_py wm prosafeav_tdmpc       train_tdmpc.py                   carla_overtake_prosafeav
+launch_py wm baseline_planet       train_planet.py                  carla_overtake_prosafeav
+launch_py wm baseline_worldmodels  train_worldmodels.py             carla_overtake_prosafeav
+
+# --- model-free baselines (Table I) ---------------------------------------- #
+launch_py modelfree baseline_dqn train_dqn.py carla_overtake_prosafeav
+launch_py modelfree baseline_sac train_sac.py carla_overtake_prosafeav
+launch_py modelfree baseline_td3 train_td3.py carla_overtake_prosafeav
+launch_py modelfree baseline_ppo train_ppo.py carla_overtake_prosafeav
 
 # --- ablations ------------------------------------------------------------- #
 launch ablation prosafeav_noevt    carla_overtake_noevt

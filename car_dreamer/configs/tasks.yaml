@@ -464,6 +464,9 @@ carla_overtake_prosafeav:
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
+    ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
+    ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
+    ego_initial_speed_range: [2.0, 6.0]
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -542,6 +545,9 @@ carla_overtake_d05:
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
+    ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
+    ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
+    ego_initial_speed_range: [2.0, 6.0]
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -620,6 +626,9 @@ carla_overtake_d15:
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
+    ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
+    ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
+    ego_initial_speed_range: [2.0, 6.0]
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -698,6 +707,9 @@ carla_overtake_d30:
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
+    ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
+    ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
+    ego_initial_speed_range: [2.0, 6.0]
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -776,6 +788,9 @@ carla_overtake_d45:
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
+    ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
+    ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
+    ego_initial_speed_range: [2.0, 6.0]
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -835,7 +850,7 @@ carla_overtake_d45:
     decoder.cnn_kernels: [5, 5, 5, 6, 6]
     train.log_keys_video: [birdeye_wpt]
 
-# Field-of-view limited BEV: the raster is built only from what an onboard sensor suite can observe, so occluded and out-of-range vehicles are absent. Occluded and out-of-range vehicles are simply absent from the raster.
+# Field-of-view limited BEV: the raster is built only from what an onboard sensor suite can observe, so occluded and out-of-range vehicles are simply absent from it.
 carla_overtake_fov:
   env:
     name: CarlaOvertakeEnv-v0
@@ -854,6 +869,9 @@ carla_overtake_fov:
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
+    ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
+    ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
+    ego_initial_speed_range: [2.0, 6.0]
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -937,6 +955,9 @@ carla_overtake_noisy:
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
+    ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
+    ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
+    ego_initial_speed_range: [2.0, 6.0]
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -1015,6 +1036,9 @@ carla_overtake_noevt:
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
+    ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
+    ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
+    ego_initial_speed_range: [2.0, 6.0]
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -1093,6 +1117,9 @@ carla_overtake_evtenv:
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
+    ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
+    ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
+    ego_initial_speed_range: [2.0, 6.0]
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -1171,6 +1198,9 @@ carla_overtake_evtimag:
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
+    ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
+    ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
+    ego_initial_speed_range: [2.0, 6.0]
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -1249,6 +1279,9 @@ carla_overtake_frank:
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
+    ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
+    ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
+    ego_initial_speed_range: [2.0, 6.0]
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -1327,6 +1360,9 @@ carla_overtake_thrq:
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
+    ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
+    ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
+    ego_initial_speed_range: [2.0, 6.0]
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -1405,6 +1441,9 @@ carla_overtake_lonly:
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
+    ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
+    ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
+    ego_initial_speed_range: [2.0, 6.0]
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -1483,6 +1522,9 @@ carla_overtake_w1:
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
+    ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
+    ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
+    ego_initial_speed_range: [2.0, 6.0]
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -1561,6 +1603,9 @@ carla_overtake_w10:
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
+    ego_gap_range: [15.0, 45.0]          # initial ego-to-target gap (m)
+    ego_offset_lane_prob: 0.3   # chance the ego starts one lane over
+    ego_initial_speed_range: [2.0, 6.0]
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -1639,6 +1684,9 @@ carla_overtake_legacy:
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
+    ego_gap_range: [20.0, 20.0]          # initial ego-to-target gap (m)
+    ego_offset_lane_prob: 0.0   # chance the ego starts one lane over
+    ego_initial_speed_range: [0.0, 0.0]
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -1699,4 +1747,446 @@ carla_overtake_legacy:
     train.log_keys_video: [birdeye_wpt]
 
 # <<< ProSafeAV revision tasks (generated) <<<
+
+
+
+# >>> ProSafeAV cross-scenario tasks (generated) >>>
+
+# Multi-lane free driving with autopilot traffic; conflicts come from lane changes on both sides rather than from a single scripted leader.
+carla_four_lane_prosafeav:
+  env:
+    reward:
+      desired_speed: 4
+      scales:
+        waypoint: 2.0
+        speed: 0.5
+        collision: 30.0
+        out_of_lane: 3.0
+        time: 0.0
+        destination_reached: 20.0
+        evt: 3.0
+    terminal:
+      time_limit: 500
+      out_lane_thres: 3
+    name: CarlaFourLaneEnv-v0
+    observation.enabled:
+    - camera
+    - collision
+    - birdeye_wpt
+    num_vehicles: 40
+    lane_start_points:
+    - - 5.8
+      - 100
+      - 0.1
+    - - 9.0
+      - 100
+      - 0.1
+    - - 12.2
+      - 100
+      - 0.1
+    - - 15.6
+      - 100
+      - 0.1
+    lane_end_points:
+    - - 5.8
+      - -58
+      - 0.1
+    - - 9.0
+      - -58
+      - 0.1
+    - - 12.2
+      - -58
+      - 0.1
+    - - 15.6
+      - -58
+      - 0.1
+    evt:
+      mode: both
+      copula: logistic
+      threshold_method: stability
+      threshold_ttc:
+      threshold_drac:
+      update_interval: 2000
+      buffer_size: 20000
+      min_sample: 500
+      min_exceedances: 50
+      risk_tolerance: 0.0
+      indicator_mode: max
+      interaction_radius: 50.0
+      crash_drac: 8.5
+  dreamerv3:
+    encoder.cnn_keys: birdeye_wpt
+    decoder.cnn_keys: birdeye_wpt
+    run.log_keys_video:
+    - camera
+    - birdeye_wpt
+    run.log_keys_max: collision
+    evt.mode: both
+    evt.imag_weight: 3.0
+  dreamerv2:
+    encoder.cnn_keys: birdeye_wpt
+    decoder.cnn_keys: birdeye_wpt
+    decoder.cnn_kernels:
+    - 5
+    - 5
+    - 5
+    - 6
+    - 6
+    train.log_keys_video:
+    - camera
+    - birdeye_wpt
+
+# As above at a higher vehicle count, to separate the effect of density from the effect of the conflict geometry.
+carla_four_lane_prosafeav_dense:
+  env:
+    reward:
+      desired_speed: 4
+      scales:
+        waypoint: 2.0
+        speed: 0.5
+        collision: 30.0
+        out_of_lane: 3.0
+        time: 0.0
+        destination_reached: 20.0
+        evt: 3.0
+    terminal:
+      time_limit: 500
+      out_lane_thres: 3
+    name: CarlaFourLaneEnv-v0
+    observation.enabled:
+    - camera
+    - collision
+    - birdeye_wpt
+    num_vehicles: 80
+    lane_start_points:
+    - - 5.8
+      - 100
+      - 0.1
+    - - 9.0
+      - 100
+      - 0.1
+    - - 12.2
+      - 100
+      - 0.1
+    - - 15.6
+      - 100
+      - 0.1
+    lane_end_points:
+    - - 5.8
+      - -58
+      - 0.1
+    - - 9.0
+      - -58
+      - 0.1
+    - - 12.2
+      - -58
+      - 0.1
+    - - 15.6
+      - -58
+      - 0.1
+    evt:
+      mode: both
+      copula: logistic
+      threshold_method: stability
+      threshold_ttc:
+      threshold_drac:
+      update_interval: 2000
+      buffer_size: 20000
+      min_sample: 500
+      min_exceedances: 50
+      risk_tolerance: 0.0
+      indicator_mode: max
+      interaction_radius: 50.0
+      crash_drac: 8.5
+  dreamerv3:
+    encoder.cnn_keys: birdeye_wpt
+    decoder.cnn_keys: birdeye_wpt
+    run.log_keys_video:
+    - camera
+    - birdeye_wpt
+    run.log_keys_max: collision
+    evt.mode: both
+    evt.imag_weight: 3.0
+  dreamerv2:
+    encoder.cnn_keys: birdeye_wpt
+    decoder.cnn_keys: birdeye_wpt
+    decoder.cnn_kernels:
+    - 5
+    - 5
+    - 5
+    - 6
+    - 6
+    train.log_keys_video:
+    - camera
+    - birdeye_wpt
+
+# Forced merge: the conflict is gap acceptance on a converging path, where the car-following DRAC is undefined and the encroachment indicator governs.
+carla_lane_merge_prosafeav:
+  env:
+    reward:
+      desired_speed: 4
+      scales:
+        waypoint: 2.0
+        speed: 0.5
+        collision: 30.0
+        out_of_lane: 3.0
+        time: 0.0
+        destination_reached: 20.0
+        evt: 3.0
+    terminal:
+      time_limit: 500
+      out_lane_thres: 3
+    world:
+      town: Town04
+      background_speed: 25
+    name: CarlaLaneMergeEnv-v0
+    observation.enabled:
+    - camera
+    - collision
+    - birdeye_wpt
+    reward.desired_speed: 6
+    lane_start_point:
+    - 49.4
+    - 141.4
+    - 0.5
+    - -155.0
+    ego_path:
+    - - 49.4
+      - 141.4
+      - 0.5
+    - - 15.4
+      - 56.0
+      - 0.1
+    use_road_waypoints:
+    - true
+    - false
+    flow_spawn_point:
+    - 16.2
+    - 137.5
+    - 0.1
+    - -90.0
+    min_flow_dist: 8
+    max_flow_dist: 14
+    evt:
+      mode: both
+      copula: logistic
+      threshold_method: stability
+      threshold_ttc:
+      threshold_drac:
+      update_interval: 2000
+      buffer_size: 20000
+      min_sample: 500
+      min_exceedances: 50
+      risk_tolerance: 0.0
+      indicator_mode: max
+      interaction_radius: 50.0
+      crash_drac: 8.5
+  dreamerv3:
+    encoder.cnn_keys: birdeye_wpt
+    decoder.cnn_keys: birdeye_wpt
+    run.log_keys_video:
+    - camera
+    - birdeye_wpt
+    evt.mode: both
+    evt.imag_weight: 3.0
+  dreamerv2:
+    encoder.cnn_keys: birdeye_wpt
+    decoder.cnn_keys: birdeye_wpt
+    decoder.cnn_kernels:
+    - 5
+    - 5
+    - 5
+    - 6
+    - 6
+    train.log_keys_video:
+    - camera
+    - birdeye_wpt
+
+# Unsignalised crossing conflict against an oncoming flow; a pure test of the two-dimensional conflict indicators.
+carla_right_turn_prosafeav:
+  env:
+    reward:
+      desired_speed: 4
+      scales:
+        waypoint: 2.0
+        speed: 0.5
+        collision: 30.0
+        out_of_lane: 3.0
+        time: 0.0
+        destination_reached: 20.0
+        evt: 3.0
+    terminal:
+      time_limit: 500
+      out_lane_thres: 3
+    world:
+      town: Town03
+    name: CarlaRightTurnEnv-v0
+    action:
+      discrete_steer:
+      - -0.9
+      - -0.3
+      - 0.0
+      - 0.3
+      - 0.9
+    observation.enabled:
+    - camera
+    - collision
+    - birdeye_wpt
+    lane_start_point:
+    - -33.8
+    - -135.1
+    - 0.1
+    - 0.0
+    ego_path:
+    - - -33.8
+      - -135.1
+      - 0.1
+    - - -5.0
+      - -110.3
+      - 0.1
+    use_road_waypoints:
+    - true
+    - false
+    flow_spawn_point:
+    - -3.4
+    - -151.2
+    - 0.1
+    - 90.0
+    evt:
+      mode: both
+      copula: logistic
+      threshold_method: stability
+      threshold_ttc:
+      threshold_drac:
+      update_interval: 2000
+      buffer_size: 20000
+      min_sample: 500
+      min_exceedances: 50
+      risk_tolerance: 0.0
+      indicator_mode: max
+      interaction_radius: 50.0
+      crash_drac: 8.5
+  dreamerv3:
+    encoder.cnn_keys: birdeye_wpt
+    decoder.cnn_keys: birdeye_wpt
+    run.log_keys_video:
+    - camera
+    - birdeye_wpt
+    evt.mode: both
+    evt.imag_weight: 3.0
+  dreamerv2:
+    encoder.cnn_keys: birdeye_wpt
+    decoder.cnn_keys: birdeye_wpt
+    decoder.cnn_kernels:
+    - 5
+    - 5
+    - 5
+    - 6
+    - 6
+    train.log_keys_video:
+    - camera
+    - birdeye_wpt
+  env.min_flow_dist: 6
+  env.max_flow_dist: 8
+
+# Roundabout yielding and circulating conflicts under continuous curvature.
+carla_roundabout_prosafeav:
+  env:
+    reward:
+      desired_speed: 4
+      scales:
+        waypoint: 2.0
+        speed: 0.5
+        collision: 30.0
+        out_of_lane: 3.0
+        time: 0.0
+        destination_reached: 20.0
+        evt: 3.0
+    terminal:
+      time_limit: 500
+      out_lane_thres: 3
+    world:
+      town: Town03
+      background_speed: 16
+    name: CarlaRoundaboutEnv-v0
+    observation.enabled:
+    - camera
+    - collision
+    - birdeye_wpt
+    lane_start_point:
+    - -52.6
+    - 1.0
+    - 0.1
+    - 0.0
+    ego_path:
+    - - -52.6
+      - 1.0
+      - 0.1
+    - - -23.0
+      - 7.5
+      - 0.1
+    - - -17.0
+      - 11.7
+      - 0.1
+    - - 13.3
+      - -13.2
+      - 0.1
+    - - 7.6
+      - -21.8
+      - 0.1
+    - - 4.2
+      - -43.2
+      - 0.1
+    use_road_waypoints:
+    - true
+    - false
+    - true
+    - false
+    - true
+    - false
+    flow_spawn_point:
+    - -14.1
+    - -13.5
+    - 0.1
+    - 125.0
+    min_flow_dist: 10
+    max_flow_dist: 16
+    terminal.out_lane_thres: 6
+    evt:
+      mode: both
+      copula: logistic
+      threshold_method: stability
+      threshold_ttc:
+      threshold_drac:
+      update_interval: 2000
+      buffer_size: 20000
+      min_sample: 500
+      min_exceedances: 50
+      risk_tolerance: 0.0
+      indicator_mode: max
+      interaction_radius: 50.0
+      crash_drac: 8.5
+  dreamerv3:
+    encoder.cnn_keys: birdeye_wpt
+    decoder.cnn_keys: birdeye_wpt
+    run.log_keys_video:
+    - camera
+    - birdeye_wpt
+    evt.mode: both
+    evt.imag_weight: 3.0
+  dreamerv2:
+    encoder.cnn_keys: birdeye_wpt
+    decoder.cnn_keys: birdeye_wpt
+    decoder.cnn_kernels:
+    - 5
+    - 5
+    - 5
+    - 6
+    - 6
+    train.log_keys_video:
+    - camera
+    - birdeye_wpt
+
+# <<< ProSafeAV cross-scenario tasks (generated) <<<
+
 

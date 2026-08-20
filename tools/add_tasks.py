@@ -24,6 +24,9 @@ COMMON_ENV = """    name: CarlaOvertakeEnv-v0
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
+    ego_gap_range: {ego_gap}          # initial ego-to-target gap (m)
+    ego_offset_lane_prob: {ego_off}   # chance the ego starts one lane over
+    ego_initial_speed_range: {ego_v0}
     swing_steer: 0.04
     swing_amplitude: 0.2
     swing_trigger_dist: 20
@@ -89,10 +92,12 @@ TRAILER = """
 
 def task(name, comment, bev="birdeye_wpt", controller="idm_mobil", density=15,
          evt_mode="both", copula="logistic", thr_method="stability", tol=0.0,
-         ind_mode="max", w_evt=3.0, w_imag=3.0, extra_env=""):
+         ind_mode="max", w_evt=3.0, w_imag=3.0, extra_env="",
+         ego_gap="[15.0, 45.0]", ego_off=0.3, ego_v0="[2.0, 6.0]"):
     body = COMMON_ENV.format(
         bev=bev, controller=controller, density=density, evt_mode=evt_mode,
         copula=copula, thr_method=thr_method, tol=tol, ind_mode=ind_mode, w_evt=w_evt,
+        ego_gap=ego_gap, ego_off=ego_off, ego_v0=ego_v0,
     )
     trailer = TRAILER.format(bev=bev, evt_mode=evt_mode, w_imag=w_imag)
     return f"\n# {comment}\n{name}:\n  env:\n{body}{extra_env}{trailer}"
@@ -114,8 +119,8 @@ blocks = [
     task(
         "carla_overtake_fov",
         "Field-of-view limited BEV: the raster is built only from what an onboard "
-        "sensor suite can observe, so occluded and out-of-range vehicles are absent. "
-        "Occluded and out-of-range vehicles are simply absent from the raster.",
+        "sensor suite can observe, so occluded and out-of-range vehicles are simply "
+        "absent from it.",
         extra_env="""    observation:
       birdeye_wpt:
         observability: fov
@@ -151,7 +156,8 @@ blocks = [
         "The originally published scenario: a single background vehicle driven by the "
         "scripted swing plus PID controller.  Kept so the previous results remain "
         "reproducible.",
-        controller="swing", density=0,
+        controller="swing", density=0, ego_gap="[20.0, 20.0]", ego_off=0.0,
+        ego_v0="[0.0, 0.0]",
     ),
 ]
 
