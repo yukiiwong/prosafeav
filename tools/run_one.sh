@@ -5,6 +5,9 @@
 #
 #   tools/run_one.sh <carla_port> <gpu> <logdir> <entry> [training args...]
 #
+# STALL_SECONDS (default 900) is how long metrics.jsonl may go unwritten before
+# the run is considered hung and restarted.
+#
 # ``entry`` is either "dreamerv3/train.py" for the JAX backbone or one of the
 # PyTorch entry points such as "dreamerv3/train_tdmpc.py".
 #
@@ -107,6 +110,7 @@ start_training() {
         --dreamerv3.logdir "$LOGDIR" \
         "${EXTRA[@]}" >> "$LOG" 2>&1 &
     TRAIN_PID=$!
+    TRAIN_STARTED_AT=$(date +%s)
     log "trainer pid ${TRAIN_PID}"
     return 0
 }
@@ -126,15 +130,50 @@ start_training || { log "initial start failed"; exit 1; }
 
 RESTARTS=0
 MAX_RESTARTS="${MAX_RESTARTS:-20}"
+# A hung CARLA leaves the trainer alive but spinning: the process check passes
+# forever while no step is taken.  Treat a metrics file that has stopped growing
+# as a failure too, otherwise a hang silently burns the rest of the run.
+STALL_SECONDS="${STALL_SECONDS:-900}"
 while true; do
     sleep 60
+
+    stalled=0
+    metrics="${LOGDIR}/metrics.jsonl"
+    if [ -f "$metrics" ]; then
+        # Measure from whichever is later: the last metric written, or the moment
+        # this trainer started.  Using the file mtime alone kills a resumed run
+        # on sight, because the metrics file it inherits from the previous
+        # attempt is already older than the limit and it is never granted a
+        # grace period in which to write its first line.
+        last=$(stat -c %Y "$metrics")
+        if [ "${TRAIN_STARTED_AT:-0}" -gt "$last" ]; then
+            last="$TRAIN_STARTED_AT"
+        fi
+        age=$(( $(date +%s) - last ))
+        if [ "$age" -ge "$STALL_SECONDS" ]; then
+            log "no metrics written for ${age}s (limit ${STALL_SECONDS}s); treating as hung"
+            kill -9 "$TRAIN_PID" 2>/dev/null
+            stalled=1
+        fi
+    fi
+
     # Track this run's own child rather than pattern-matching every trainer on
     # the machine, so concurrent runs cannot mistake each other for themselves.
-    if ! kill -0 "$TRAIN_PID" 2>/dev/null; then
+    if [ "$stalled" -eq 1 ] || ! kill -0 "$TRAIN_PID" 2>/dev/null; then
         wait "$TRAIN_PID" 2>/dev/null
         code=$?
-        if [ "$code" -eq 0 ]; then
+        if [ "$code" -eq 0 ] && [ "$stalled" -eq 0 ]; then
             log "training finished cleanly"
+            # The replay buffer is about half the footprint of a finished run and
+            # is only needed to resume one.  Over a hundred-run sweep it is the
+            # difference between fitting on the disk and filling a volume other
+            # people are also using.  Opt-in, because pruning forfeits resuming.
+            if [ "${PRUNE_REPLAY:-0}" = "1" ] && [ -d "${LOGDIR}/replay" ]; then
+                local freed
+                freed=$(du -sh "${LOGDIR}/replay" 2>/dev/null | cut -f1)
+                rm -rf "${LOGDIR}/replay"
+                log "pruned the replay buffer (${freed} reclaimed)"
+            fi
             cleanup
         fi
         RESTARTS=$((RESTARTS + 1))

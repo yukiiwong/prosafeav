@@ -14,7 +14,6 @@
 #   SEEDS="0 1 2"     seeds per configuration                  (default 0 1 2)
 #   STEPS=3e5         training steps                           (default 3e5)
 #   BASE_PORT=2000    first CARLA port; each run takes port+4k  (default 2000)
-#   MEM_FRACTION=0.35 per-job cap on GPU memory                  (default 0.35)
 #
 # One CARLA server plus one trainer is roughly 8-12 GB of VRAM, so JOBS=2 fits
 # comfortably on a single A100 80GB alongside another user's work; raise it only
@@ -142,7 +141,7 @@ cmd_worker() {
 
         echo "[$(date '+%F %T')] launching ${name} (group ${group}) port ${port} gpu ${gpu}"
         # shellcheck disable=SC2086
-        MEM_FRACTION="${MEM_FRACTION:-0.35}" bash "${REPO}/tools/run_one.sh" "$port" "$gpu" "$logdir" "${REPO}/${entry}" \
+        bash "${REPO}/tools/run_one.sh" "$port" "$gpu" "$logdir" "${REPO}/${entry}" \
             --task "$task" \
             --dreamerv3.seed "$seed" \
             --dreamerv3.run.steps "$STEPS" \
