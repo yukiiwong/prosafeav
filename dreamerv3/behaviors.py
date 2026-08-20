@@ -25,7 +25,24 @@ class Greedy(nj.Module):
 
         def rewfn(s):
             reward = wm.heads["reward"](s).mean()[1:]
-            if use_imag and "safety" in wm.heads and "evt_params" in s:
+            if use_imag:
+                # Fail loudly at trace time rather than silently returning the
+                # unpenalised reward: a missing safety head or missing evt_params
+                # would turn the whole EVT-in-imagination path into a no-op that
+                # only shows up as an unexplained result days later.
+                if "safety" not in wm.heads:
+                    raise RuntimeError(
+                        f"evt.mode={config.evt.mode} needs the world model safety "
+                        "head, which is only built when the environment provides a "
+                        "'safety' observation. Check env.evt.mode in the task config."
+                    )
+                if "evt_params" not in s:
+                    raise RuntimeError(
+                        f"evt.mode={config.evt.mode} needs the fitted EVT parameters "
+                        "to reach imagination, but 'evt_params' is absent from the "
+                        "trajectory. The environment must publish it as an "
+                        "observation and WorldModel.imagine must carry it through."
+                    )
                 safety = wm.heads["safety"](s).mean()[1:]
                 risk = evt_jax.evt_risk(safety, s["evt_params"][1:])
                 reward = reward - w_evt * risk
