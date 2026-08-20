@@ -70,6 +70,7 @@ wm|prosafeav_transformer|dreamerv3/train_transformer_wm.py|carla_overtake_prosaf
 wm|prosafeav_tdmpc|dreamerv3/train_tdmpc.py|carla_overtake_prosafeav|
 wm|baseline_planet|dreamerv3/train_planet.py|carla_overtake_prosafeav|
 wm|baseline_worldmodels|dreamerv3/train_worldmodels.py|carla_overtake_prosafeav|
+wm|baseline_simple|dreamerv3/train_simple.py|carla_overtake_prosafeav|
 modelfree|baseline_dqn|dreamerv3/train_dqn.py|carla_overtake_prosafeav|
 modelfree|baseline_sac|dreamerv3/train_sac.py|carla_overtake_prosafeav|
 modelfree|baseline_td3|dreamerv3/train_td3.py|carla_overtake_prosafeav|

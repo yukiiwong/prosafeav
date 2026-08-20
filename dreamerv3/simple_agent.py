@@ -90,7 +90,7 @@ class SimPLeAgent:
 
         # Networks
         self.dynamics = SimpleDynamicsModel(self.obs_dim, self.act_dim).to(self.device)
-        self.policy = SimplePolicy(self.obs_dim, self.act_dim).to(self.device)
+        self.policy_net = SimplePolicy(self.obs_dim, self.act_dim).to(self.device)
         self.value = SimpleValueNetwork(self.obs_dim).to(self.device)
 
         # Optimizers
@@ -99,7 +99,7 @@ class SimPLeAgent:
             lr=config.get('dynamics_lr', 1e-3)
         )
         self.policy_optimizer = optim.Adam(
-            self.policy.parameters(),
+            self.policy_net.parameters(),
             lr=config.get('policy_lr', 3e-4)
         )
         self.value_optimizer = optim.Adam(
@@ -132,7 +132,7 @@ class SimPLeAgent:
         batch_size = obs_tensor.size(0)
 
         with torch.no_grad():
-            logits = self.policy(obs_tensor)
+            logits = self.policy_net(obs_tensor)
 
             if mode == 'train' and np.random.rand() < self.epsilon:
                 # Random exploration
@@ -185,7 +185,7 @@ class SimPLeAgent:
 
             for _ in range(self.rollout_length):
                 # Get action from current policy
-                action_logits = self.policy(current_obs)
+                action_logits = self.policy_net(current_obs)
                 action_probs = F.softmax(action_logits, dim=-1)
                 dist = torch.distributions.Categorical(action_probs)
                 action_idx = dist.sample()
@@ -206,7 +206,7 @@ class SimPLeAgent:
 
         # ===== Train Policy on Real + Simulated Data =====
         # Real data
-        real_logits = self.policy(obs_tensor)
+        real_logits = self.policy_net(obs_tensor)
         real_values = self.value(obs_tensor).squeeze(-1)
         real_action_idx = actions.argmax(dim=-1)
 
@@ -216,7 +216,7 @@ class SimPLeAgent:
         sim_actions_flat = simulated_actions.reshape(batch_size * rollout_len, self.num_actions)
         sim_rewards_flat = simulated_rewards.reshape(batch_size * rollout_len)
 
-        sim_logits = self.policy(sim_obs_flat)
+        sim_logits = self.policy_net(sim_obs_flat)
         sim_values = self.value(sim_obs_flat).squeeze(-1)
         sim_action_idx = sim_actions_flat.argmax(dim=-1)
 
@@ -276,14 +276,14 @@ class SimPLeAgent:
     def save(self):
         return {
             'dynamics': self.dynamics.state_dict(),
-            'policy': self.policy.state_dict(),
+            'policy': self.policy_net.state_dict(),
             'value': self.value.state_dict(),
             'epsilon': self.epsilon,
         }
 
     def load(self, data):
         self.dynamics.load_state_dict(data['dynamics'])
-        self.policy.load_state_dict(data['policy'])
+        self.policy_net.load_state_dict(data['policy'])
         self.value.load_state_dict(data['value'])
         self.epsilon = data.get('epsilon', self.epsilon)
 

@@ -33,7 +33,12 @@ class PPOAgent:
         self.num_actions = self.act_dim
 
         self.model = MLPPolicy(self.obs_dim, self.act_dim).to(self.device)
-        self.optimizer = optim.Adam(self.model.parameters(), lr=config.learning_rate)
+        # dreamerv3.yaml defines no top-level learning_rate, so the attribute
+        # form raised before the agent could be constructed at all.  Every other
+        # agent here reads its hyper-parameters with config.get and a default.
+        self.optimizer = optim.Adam(
+            self.model.parameters(), lr=config.get("learning_rate", 3e-4)
+        )
 
     def _preprocess_obs(self, obs):
         x = obs[self.obs_key]  # e.g., shape (batch, D)
