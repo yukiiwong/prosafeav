@@ -41,6 +41,9 @@ class CarlaOvertakeEnv(CarlaWptEnv):
     * ``background_speed_range``: ``[min, max]`` desired speed (m/s) of background
       traffic; each vehicle draws its own IDM ``v0`` around a value in this range.
     * ``spawn_gap_range``: ``[min, max]`` initial longitudinal gap (m).
+    * ``spawn_behind_fraction``: share of background traffic starting *behind* the
+      ego.  Spawning everything ahead lets faster traffic disperse, so the density
+      the ego actually experiences decays to zero over an episode.
     * ``aggressive_fraction``: share of background drivers using short headways.
     * ``swing_steer``: The background vehicle steer for swing.
     * ``swing_amplitude``: The y-axis amplitude of background vehicle steer.
@@ -193,17 +196,34 @@ class CarlaOvertakeEnv(CarlaWptEnv):
 
         n_target = self._num_background_vehicles(road_length, len(self.lane_centres))
 
-        # Lay the vehicles out lane by lane with randomised gaps, skipping the slot
-        # immediately behind the ego vehicle so the episode never starts in a crash.
+        # Lay the vehicles out lane by lane with randomised gaps, both ahead of and
+        # behind the ego.  Spawning only ahead was a mistake: every background
+        # vehicle is faster than the ego's desired speed, so they all drove away and
+        # the ego finished the episode alone, with the density it actually
+        # experienced decaying towards zero regardless of the configured value.
         candidates = []
+        behind_frac = float(self._config.get("spawn_behind_fraction", 0.4))
         for lane_x in self.lane_centres:
+            # Ahead of the ego, from just past the overtaking target to the end.
             y = min(y_start, self.nonego_spawn_point[1]) - float(self._rng.uniform(*gap_range))
             while y > y_end + 10.0:
-                candidates.append((lane_x, y))
+                candidates.append((lane_x, y, "ahead"))
                 y -= float(self._rng.uniform(*gap_range))
+            # Behind the ego, so faster traffic closes on it from the rear and
+            # produces following and cut-in conflicts rather than dispersing.
+            y = y_start + float(self._rng.uniform(*gap_range))
+            while y < y_start + 120.0:
+                candidates.append((lane_x, y, "behind"))
+                y += float(self._rng.uniform(*gap_range))
+        self._rng.shuffle(candidates)
+        # Keep the requested share behind the ego.
+        ahead = [c for c in candidates if c[2] == "ahead"]
+        behind = [c for c in candidates if c[2] == "behind"]
+        n_behind = int(round(behind_frac * len(candidates)))
+        candidates = behind[:n_behind] + ahead
         self._rng.shuffle(candidates)
 
-        for lane_x, y in candidates:
+        for lane_x, y, _side in candidates:
             if len(self.background_vehicles) >= n_target:
                 break
             if abs(lane_x - self.nonego_spawn_point[0]) < 1.0 and abs(y - self.nonego_spawn_point[1]) < 12.0:

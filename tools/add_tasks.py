@@ -20,7 +20,9 @@ COMMON_ENV = """    name: CarlaOvertakeEnv-v0
     lane_centres: [5.8, 9.0, 12.2, 15.6]
     background_controller: {controller}
     traffic_density: {density}          # background vehicles per km per lane
-    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    background_speed_range: [3.0, 9.0]  # brackets the ego's desired speed, so some
+                                        # traffic is caught up to and some catches up
+    spawn_behind_fraction: 0.4          # share of traffic starting behind the ego
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
@@ -47,9 +49,8 @@ COMMON_ENV = """    name: CarlaOvertakeEnv-v0
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 300
-      min_exceedances: 30
-      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
+      min_sample: 500
+      min_exceedances: 50
       risk_tolerance: {tol}     # u in Eq. (6)
       indicator_mode: {ind_mode}  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -88,10 +89,6 @@ TRAILER = """
     decoder.cnn_keys: "{bev}"
     run.log_keys_video: [{bev}]
     run.log_keys_max: "collision"
-    # Matched against observation keys. In eval mode the environment folds
-    # its info dict into the observations under an eval_ prefix, which is
-    # how the conflict and EVT quantities reach the result tables.
-    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: {evt_mode}
     evt.imag_weight: {w_imag}
 

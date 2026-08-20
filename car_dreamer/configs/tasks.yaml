@@ -460,7 +460,9 @@ carla_overtake_prosafeav:
     lane_centres: [5.8, 9.0, 12.2, 15.6]
     background_controller: idm_mobil
     traffic_density: 15          # background vehicles per km per lane
-    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    background_speed_range: [3.0, 9.0]  # brackets the ego's desired speed, so some
+                                        # traffic is caught up to and some catches up
+    spawn_behind_fraction: 0.4          # share of traffic starting behind the ego
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
@@ -487,9 +489,8 @@ carla_overtake_prosafeav:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 300
-      min_exceedances: 30
-      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
+      min_sample: 500
+      min_exceedances: 50
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -526,10 +527,6 @@ carla_overtake_prosafeav:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
-    # Matched against observation keys. In eval mode the environment folds
-    # its info dict into the observations under an eval_ prefix, which is
-    # how the conflict and EVT quantities reach the result tables.
-    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 3.0
 
@@ -554,7 +551,9 @@ carla_overtake_d05:
     lane_centres: [5.8, 9.0, 12.2, 15.6]
     background_controller: idm_mobil
     traffic_density: 5          # background vehicles per km per lane
-    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    background_speed_range: [3.0, 9.0]  # brackets the ego's desired speed, so some
+                                        # traffic is caught up to and some catches up
+    spawn_behind_fraction: 0.4          # share of traffic starting behind the ego
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
@@ -581,9 +580,8 @@ carla_overtake_d05:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 300
-      min_exceedances: 30
-      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
+      min_sample: 500
+      min_exceedances: 50
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -620,10 +618,6 @@ carla_overtake_d05:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
-    # Matched against observation keys. In eval mode the environment folds
-    # its info dict into the observations under an eval_ prefix, which is
-    # how the conflict and EVT quantities reach the result tables.
-    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 3.0
 
@@ -648,7 +642,9 @@ carla_overtake_d15:
     lane_centres: [5.8, 9.0, 12.2, 15.6]
     background_controller: idm_mobil
     traffic_density: 15          # background vehicles per km per lane
-    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    background_speed_range: [3.0, 9.0]  # brackets the ego's desired speed, so some
+                                        # traffic is caught up to and some catches up
+    spawn_behind_fraction: 0.4          # share of traffic starting behind the ego
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
@@ -675,9 +671,8 @@ carla_overtake_d15:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 300
-      min_exceedances: 30
-      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
+      min_sample: 500
+      min_exceedances: 50
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -714,10 +709,6 @@ carla_overtake_d15:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
-    # Matched against observation keys. In eval mode the environment folds
-    # its info dict into the observations under an eval_ prefix, which is
-    # how the conflict and EVT quantities reach the result tables.
-    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 3.0
 
@@ -742,7 +733,9 @@ carla_overtake_d30:
     lane_centres: [5.8, 9.0, 12.2, 15.6]
     background_controller: idm_mobil
     traffic_density: 30          # background vehicles per km per lane
-    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    background_speed_range: [3.0, 9.0]  # brackets the ego's desired speed, so some
+                                        # traffic is caught up to and some catches up
+    spawn_behind_fraction: 0.4          # share of traffic starting behind the ego
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
@@ -769,9 +762,8 @@ carla_overtake_d30:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 300
-      min_exceedances: 30
-      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
+      min_sample: 500
+      min_exceedances: 50
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -808,10 +800,6 @@ carla_overtake_d30:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
-    # Matched against observation keys. In eval mode the environment folds
-    # its info dict into the observations under an eval_ prefix, which is
-    # how the conflict and EVT quantities reach the result tables.
-    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 3.0
 
@@ -836,7 +824,9 @@ carla_overtake_d45:
     lane_centres: [5.8, 9.0, 12.2, 15.6]
     background_controller: idm_mobil
     traffic_density: 45          # background vehicles per km per lane
-    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    background_speed_range: [3.0, 9.0]  # brackets the ego's desired speed, so some
+                                        # traffic is caught up to and some catches up
+    spawn_behind_fraction: 0.4          # share of traffic starting behind the ego
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
@@ -863,9 +853,8 @@ carla_overtake_d45:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 300
-      min_exceedances: 30
-      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
+      min_sample: 500
+      min_exceedances: 50
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -902,10 +891,6 @@ carla_overtake_d45:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
-    # Matched against observation keys. In eval mode the environment folds
-    # its info dict into the observations under an eval_ prefix, which is
-    # how the conflict and EVT quantities reach the result tables.
-    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 3.0
 
@@ -930,7 +915,9 @@ carla_overtake_fov:
     lane_centres: [5.8, 9.0, 12.2, 15.6]
     background_controller: idm_mobil
     traffic_density: 15          # background vehicles per km per lane
-    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    background_speed_range: [3.0, 9.0]  # brackets the ego's desired speed, so some
+                                        # traffic is caught up to and some catches up
+    spawn_behind_fraction: 0.4          # share of traffic starting behind the ego
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
@@ -957,9 +944,8 @@ carla_overtake_fov:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 300
-      min_exceedances: 30
-      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
+      min_sample: 500
+      min_exceedances: 50
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -1001,10 +987,6 @@ carla_overtake_fov:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
-    # Matched against observation keys. In eval mode the environment folds
-    # its info dict into the observations under an eval_ prefix, which is
-    # how the conflict and EVT quantities reach the result tables.
-    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 3.0
 
@@ -1029,7 +1011,9 @@ carla_overtake_noisy:
     lane_centres: [5.8, 9.0, 12.2, 15.6]
     background_controller: idm_mobil
     traffic_density: 15          # background vehicles per km per lane
-    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    background_speed_range: [3.0, 9.0]  # brackets the ego's desired speed, so some
+                                        # traffic is caught up to and some catches up
+    spawn_behind_fraction: 0.4          # share of traffic starting behind the ego
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
@@ -1056,9 +1040,8 @@ carla_overtake_noisy:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 300
-      min_exceedances: 30
-      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
+      min_sample: 500
+      min_exceedances: 50
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -1095,10 +1078,6 @@ carla_overtake_noisy:
     decoder.cnn_keys: "birdeye_wpt_with_errors"
     run.log_keys_video: [birdeye_wpt_with_errors]
     run.log_keys_max: "collision"
-    # Matched against observation keys. In eval mode the environment folds
-    # its info dict into the observations under an eval_ prefix, which is
-    # how the conflict and EVT quantities reach the result tables.
-    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 3.0
 
@@ -1123,7 +1102,9 @@ carla_overtake_noevt:
     lane_centres: [5.8, 9.0, 12.2, 15.6]
     background_controller: idm_mobil
     traffic_density: 15          # background vehicles per km per lane
-    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    background_speed_range: [3.0, 9.0]  # brackets the ego's desired speed, so some
+                                        # traffic is caught up to and some catches up
+    spawn_behind_fraction: 0.4          # share of traffic starting behind the ego
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
@@ -1150,9 +1131,8 @@ carla_overtake_noevt:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 300
-      min_exceedances: 30
-      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
+      min_sample: 500
+      min_exceedances: 50
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -1189,10 +1169,6 @@ carla_overtake_noevt:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
-    # Matched against observation keys. In eval mode the environment folds
-    # its info dict into the observations under an eval_ prefix, which is
-    # how the conflict and EVT quantities reach the result tables.
-    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: none
     evt.imag_weight: 0.0
 
@@ -1217,7 +1193,9 @@ carla_overtake_evtenv:
     lane_centres: [5.8, 9.0, 12.2, 15.6]
     background_controller: idm_mobil
     traffic_density: 15          # background vehicles per km per lane
-    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    background_speed_range: [3.0, 9.0]  # brackets the ego's desired speed, so some
+                                        # traffic is caught up to and some catches up
+    spawn_behind_fraction: 0.4          # share of traffic starting behind the ego
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
@@ -1244,9 +1222,8 @@ carla_overtake_evtenv:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 300
-      min_exceedances: 30
-      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
+      min_sample: 500
+      min_exceedances: 50
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -1283,10 +1260,6 @@ carla_overtake_evtenv:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
-    # Matched against observation keys. In eval mode the environment folds
-    # its info dict into the observations under an eval_ prefix, which is
-    # how the conflict and EVT quantities reach the result tables.
-    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: env
     evt.imag_weight: 0.0
 
@@ -1311,7 +1284,9 @@ carla_overtake_evtimag:
     lane_centres: [5.8, 9.0, 12.2, 15.6]
     background_controller: idm_mobil
     traffic_density: 15          # background vehicles per km per lane
-    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    background_speed_range: [3.0, 9.0]  # brackets the ego's desired speed, so some
+                                        # traffic is caught up to and some catches up
+    spawn_behind_fraction: 0.4          # share of traffic starting behind the ego
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
@@ -1338,9 +1313,8 @@ carla_overtake_evtimag:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 300
-      min_exceedances: 30
-      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
+      min_sample: 500
+      min_exceedances: 50
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -1377,10 +1351,6 @@ carla_overtake_evtimag:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
-    # Matched against observation keys. In eval mode the environment folds
-    # its info dict into the observations under an eval_ prefix, which is
-    # how the conflict and EVT quantities reach the result tables.
-    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: imagine
     evt.imag_weight: 3.0
 
@@ -1405,7 +1375,9 @@ carla_overtake_frank:
     lane_centres: [5.8, 9.0, 12.2, 15.6]
     background_controller: idm_mobil
     traffic_density: 15          # background vehicles per km per lane
-    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    background_speed_range: [3.0, 9.0]  # brackets the ego's desired speed, so some
+                                        # traffic is caught up to and some catches up
+    spawn_behind_fraction: 0.4          # share of traffic starting behind the ego
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
@@ -1432,9 +1404,8 @@ carla_overtake_frank:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 300
-      min_exceedances: 30
-      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
+      min_sample: 500
+      min_exceedances: 50
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -1471,10 +1442,6 @@ carla_overtake_frank:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
-    # Matched against observation keys. In eval mode the environment folds
-    # its info dict into the observations under an eval_ prefix, which is
-    # how the conflict and EVT quantities reach the result tables.
-    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 3.0
 
@@ -1499,7 +1466,9 @@ carla_overtake_thrq:
     lane_centres: [5.8, 9.0, 12.2, 15.6]
     background_controller: idm_mobil
     traffic_density: 15          # background vehicles per km per lane
-    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    background_speed_range: [3.0, 9.0]  # brackets the ego's desired speed, so some
+                                        # traffic is caught up to and some catches up
+    spawn_behind_fraction: 0.4          # share of traffic starting behind the ego
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
@@ -1526,9 +1495,8 @@ carla_overtake_thrq:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 300
-      min_exceedances: 30
-      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
+      min_sample: 500
+      min_exceedances: 50
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -1565,10 +1533,6 @@ carla_overtake_thrq:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
-    # Matched against observation keys. In eval mode the environment folds
-    # its info dict into the observations under an eval_ prefix, which is
-    # how the conflict and EVT quantities reach the result tables.
-    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 3.0
 
@@ -1593,7 +1557,9 @@ carla_overtake_lonly:
     lane_centres: [5.8, 9.0, 12.2, 15.6]
     background_controller: idm_mobil
     traffic_density: 15          # background vehicles per km per lane
-    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    background_speed_range: [3.0, 9.0]  # brackets the ego's desired speed, so some
+                                        # traffic is caught up to and some catches up
+    spawn_behind_fraction: 0.4          # share of traffic starting behind the ego
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
@@ -1620,9 +1586,8 @@ carla_overtake_lonly:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 300
-      min_exceedances: 30
-      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
+      min_sample: 500
+      min_exceedances: 50
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: longitudinal  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -1659,10 +1624,6 @@ carla_overtake_lonly:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
-    # Matched against observation keys. In eval mode the environment folds
-    # its info dict into the observations under an eval_ prefix, which is
-    # how the conflict and EVT quantities reach the result tables.
-    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 3.0
 
@@ -1687,7 +1648,9 @@ carla_overtake_w1:
     lane_centres: [5.8, 9.0, 12.2, 15.6]
     background_controller: idm_mobil
     traffic_density: 15          # background vehicles per km per lane
-    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    background_speed_range: [3.0, 9.0]  # brackets the ego's desired speed, so some
+                                        # traffic is caught up to and some catches up
+    spawn_behind_fraction: 0.4          # share of traffic starting behind the ego
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
@@ -1714,9 +1677,8 @@ carla_overtake_w1:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 300
-      min_exceedances: 30
-      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
+      min_sample: 500
+      min_exceedances: 50
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -1753,10 +1715,6 @@ carla_overtake_w1:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
-    # Matched against observation keys. In eval mode the environment folds
-    # its info dict into the observations under an eval_ prefix, which is
-    # how the conflict and EVT quantities reach the result tables.
-    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 1.0
 
@@ -1781,7 +1739,9 @@ carla_overtake_w10:
     lane_centres: [5.8, 9.0, 12.2, 15.6]
     background_controller: idm_mobil
     traffic_density: 15          # background vehicles per km per lane
-    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    background_speed_range: [3.0, 9.0]  # brackets the ego's desired speed, so some
+                                        # traffic is caught up to and some catches up
+    spawn_behind_fraction: 0.4          # share of traffic starting behind the ego
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
@@ -1808,9 +1768,8 @@ carla_overtake_w10:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 300
-      min_exceedances: 30
-      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
+      min_sample: 500
+      min_exceedances: 50
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -1847,10 +1806,6 @@ carla_overtake_w10:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
-    # Matched against observation keys. In eval mode the environment folds
-    # its info dict into the observations under an eval_ prefix, which is
-    # how the conflict and EVT quantities reach the result tables.
-    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 10.0
 
@@ -1875,7 +1830,9 @@ carla_overtake_critical:
     lane_centres: [5.8, 9.0, 12.2, 15.6]
     background_controller: idm_mobil
     traffic_density: 25          # background vehicles per km per lane
-    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    background_speed_range: [3.0, 9.0]  # brackets the ego's desired speed, so some
+                                        # traffic is caught up to and some catches up
+    spawn_behind_fraction: 0.4          # share of traffic starting behind the ego
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
@@ -1902,9 +1859,8 @@ carla_overtake_critical:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 300
-      min_exceedances: 30
-      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
+      min_sample: 500
+      min_exceedances: 50
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -1941,10 +1897,6 @@ carla_overtake_critical:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
-    # Matched against observation keys. In eval mode the environment folds
-    # its info dict into the observations under an eval_ prefix, which is
-    # how the conflict and EVT quantities reach the result tables.
-    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 3.0
 
@@ -1969,7 +1921,9 @@ carla_overtake_calm:
     lane_centres: [5.8, 9.0, 12.2, 15.6]
     background_controller: idm_mobil
     traffic_density: 8          # background vehicles per km per lane
-    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    background_speed_range: [3.0, 9.0]  # brackets the ego's desired speed, so some
+                                        # traffic is caught up to and some catches up
+    spawn_behind_fraction: 0.4          # share of traffic starting behind the ego
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
@@ -1996,9 +1950,8 @@ carla_overtake_calm:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 300
-      min_exceedances: 30
-      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
+      min_sample: 500
+      min_exceedances: 50
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -2035,10 +1988,6 @@ carla_overtake_calm:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
-    # Matched against observation keys. In eval mode the environment folds
-    # its info dict into the observations under an eval_ prefix, which is
-    # how the conflict and EVT quantities reach the result tables.
-    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 3.0
 
@@ -2063,7 +2012,9 @@ carla_overtake_legacy:
     lane_centres: [5.8, 9.0, 12.2, 15.6]
     background_controller: swing
     traffic_density: 0          # background vehicles per km per lane
-    background_speed_range: [6.0, 12.0] # desired speed of background traffic (m/s)
+    background_speed_range: [3.0, 9.0]  # brackets the ego's desired speed, so some
+                                        # traffic is caught up to and some catches up
+    spawn_behind_fraction: 0.4          # share of traffic starting behind the ego
     target_speed: 4.0                   # desired speed of the overtaken vehicle (m/s)
     spawn_gap_range: [12.0, 45.0]
     aggressive_fraction: 0.25
@@ -2090,9 +2041,8 @@ carla_overtake_legacy:
       threshold_drac: null
       update_interval: 2000     # environment steps between refits
       buffer_size: 20000
-      min_sample: 300
-      min_exceedances: 30
-      ttc_cap: 30.0            # no-interaction cutoff, NOT the conflict threshold
+      min_sample: 500
+      min_exceedances: 50
       risk_tolerance: 0.0     # u in Eq. (6)
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
@@ -2129,10 +2079,6 @@ carla_overtake_legacy:
     decoder.cnn_keys: "birdeye_wpt"
     run.log_keys_video: [birdeye_wpt]
     run.log_keys_max: "collision"
-    # Matched against observation keys. In eval mode the environment folds
-    # its info dict into the observations under an eval_ prefix, which is
-    # how the conflict and EVT quantities reach the result tables.
-    run.log_keys_mean: "(log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)"
     evt.mode: both
     evt.imag_weight: 3.0
 
@@ -2143,6 +2089,7 @@ carla_overtake_legacy:
     train.log_keys_video: [birdeye_wpt]
 
 # <<< ProSafeAV revision tasks (generated) <<<
+
 
 
 
