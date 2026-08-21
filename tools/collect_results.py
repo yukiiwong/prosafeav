@@ -50,8 +50,15 @@ DEFAULT_METRICS = [
 ]
 
 
-def read_run(run_dir):
-    """Per-episode series for one run, keyed by bare metric name."""
+def read_run(run_dir, max_step=None):
+    """Per-episode series for one run, keyed by bare metric name.
+
+    ``max_step`` discards rows beyond a step budget.  Runs in a sweep do not
+    always share one: a configuration that was launched under an earlier budget,
+    or resumed from a longer checkpoint, would otherwise be compared against
+    others at a different amount of training, which is not a comparison of the
+    methods at all.
+    """
     path = Path(run_dir) / "metrics.jsonl"
     if not path.exists():
         return {}
@@ -61,6 +68,8 @@ def read_run(run_dir):
             try:
                 row = json.loads(line)
             except json.JSONDecodeError:
+                continue
+            if max_step is not None and row.get("step", 0) > max_step:
                 continue
             for key, value in row.items():
                 if not isinstance(value, (int, float)):
@@ -94,6 +103,9 @@ def main():
     ap.add_argument("--logdir", default="logdir")
     ap.add_argument("--pattern", default="*", help="glob over run directory names")
     ap.add_argument("--metrics", nargs="*", default=DEFAULT_METRICS)
+    ap.add_argument("--max-step", type=float, default=None,
+                    help="only use rows up to this environment step, so runs with "
+                         "different budgets are compared at a common horizon")
     ap.add_argument("--latex", default=None, help="also write a LaTeX table here")
     ap.add_argument("--json", default=None, help="also write the raw numbers here")
     args = ap.parse_args()
@@ -105,7 +117,7 @@ def main():
             continue
         match = re.match(r"^(.*)_s(\d+)$", run_dir.name)
         config = match.group(1) if match else run_dir.name
-        series = read_run(run_dir)
+        series = read_run(run_dir, max_step=args.max_step)
         if series:
             groups[config].append(series)
 
@@ -141,6 +153,8 @@ def main():
     print()
     for config in configs:
         print(f"  {config}: {len(groups[config])} seed(s)")
+    if args.max_step:
+        print(f"  (truncated at step {int(args.max_step)})")
 
     # ---- LaTeX ------------------------------------------------------------ #
     if args.latex:

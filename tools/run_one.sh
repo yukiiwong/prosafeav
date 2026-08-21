@@ -51,6 +51,41 @@ TM_PORT=$((CARLA_PORT + 6000))
 
 log() { echo "[$(date '+%F %T')] $*" >> "$LOG"; }
 
+# Skip a run that has already reached its step target, so restarting the queue
+# after an interruption resumes the sweep instead of re-running finished work.
+# Relaunching a finished run is not merely wasteful: the trainer loads the
+# checkpoint, finds the loop condition already false, and then sits there
+# holding a slot without ever writing another metric.
+skip_if_complete() {
+    local target="" i
+    for i in "${!EXTRA[@]}"; do
+        if [ "${EXTRA[$i]}" = "--dreamerv3.run.steps" ]; then
+            target="${EXTRA[$((i + 1))]}"
+        fi
+    done
+    [ -z "$target" ] && return 1
+    [ -f "${LOGDIR}/metrics.jsonl" ] || return 1
+    local done_steps
+    done_steps=$("$PYTHON" - "${LOGDIR}/metrics.jsonl" <<'PYEOF'
+import json
+import sys
+
+best = 0
+for line in open(sys.argv[1], errors="ignore"):
+    try:
+        best = max(best, json.loads(line).get("step", 0))
+    except Exception:
+        pass
+print(int(best))
+PYEOF
+)
+    if awk "BEGIN{exit !($done_steps >= $target)}"; then
+        log "already at ${done_steps} steps, target ${target}; skipping"
+        return 0
+    fi
+    return 1
+}
+
 # An open TCP port is not proof of a healthy simulator: a CARLA that is shutting
 # down still holds the socket, and a trainer started against it dies on the first
 # load_world.  Probe with a real client handshake instead.
@@ -124,8 +159,10 @@ cleanup() {
 }
 trap cleanup SIGINT SIGTERM
 
-: > "$LOG"
 log "run: port=${CARLA_PORT} gpu=${GPU} entry=${ENTRY} args=${EXTRA[*]}"
+if skip_if_complete; then
+    exit 0
+fi
 start_training || { log "initial start failed"; exit 1; }
 
 RESTARTS=0
