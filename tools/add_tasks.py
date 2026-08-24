@@ -76,7 +76,13 @@ COMMON_ENV = """    name: CarlaOvertakeEnv-v0
           destination_reached: 20.0,
         }}
     terminal:
-      out_lane_thres: 5
+      # Lane centres are 3.2 m apart, so a 5 m tolerance permits exactly one lane
+      # change and terminates the episode on a second one.  With multi-lane
+      # traffic the ego routinely needs two lanes to find a gap, and the task was
+      # ending 24-47% of episodes for performing the manoeuvre under study, the
+      # rate rising with density.  10 m allows two lane changes with margin; the
+      # road boundaries below remain the real off-road test.
+      out_lane_thres: 10
       time_limit: 500
       left_lane_boundry: 3.7
       right_lane_boundry: 17.7

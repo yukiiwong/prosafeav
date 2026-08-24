@@ -516,7 +516,13 @@ carla_overtake_prosafeav:
           destination_reached: 20.0,
         }
     terminal:
-      out_lane_thres: 5
+      # Lane centres are 3.2 m apart, so a 5 m tolerance permits exactly one lane
+      # change and terminates the episode on a second one.  With multi-lane
+      # traffic the ego routinely needs two lanes to find a gap, and the task was
+      # ending 24-47% of episodes for performing the manoeuvre under study, the
+      # rate rising with density.  10 m allows two lane changes with margin; the
+      # road boundaries below remain the real off-road test.
+      out_lane_thres: 10
       time_limit: 500
       left_lane_boundry: 3.7
       right_lane_boundry: 17.7
@@ -608,7 +614,13 @@ carla_overtake_d05:
           destination_reached: 20.0,
         }
     terminal:
-      out_lane_thres: 5
+      # Lane centres are 3.2 m apart, so a 5 m tolerance permits exactly one lane
+      # change and terminates the episode on a second one.  With multi-lane
+      # traffic the ego routinely needs two lanes to find a gap, and the task was
+      # ending 24-47% of episodes for performing the manoeuvre under study, the
+      # rate rising with density.  10 m allows two lane changes with margin; the
+      # road boundaries below remain the real off-road test.
+      out_lane_thres: 10
       time_limit: 500
       left_lane_boundry: 3.7
       right_lane_boundry: 17.7
@@ -700,7 +712,13 @@ carla_overtake_d15:
           destination_reached: 20.0,
         }
     terminal:
-      out_lane_thres: 5
+      # Lane centres are 3.2 m apart, so a 5 m tolerance permits exactly one lane
+      # change and terminates the episode on a second one.  With multi-lane
+      # traffic the ego routinely needs two lanes to find a gap, and the task was
+      # ending 24-47% of episodes for performing the manoeuvre under study, the
+      # rate rising with density.  10 m allows two lane changes with margin; the
+      # road boundaries below remain the real off-road test.
+      out_lane_thres: 10
       time_limit: 500
       left_lane_boundry: 3.7
       right_lane_boundry: 17.7
@@ -792,7 +810,13 @@ carla_overtake_d30:
           destination_reached: 20.0,
         }
     terminal:
-      out_lane_thres: 5
+      # Lane centres are 3.2 m apart, so a 5 m tolerance permits exactly one lane
+      # change and terminates the episode on a second one.  With multi-lane
+      # traffic the ego routinely needs two lanes to find a gap, and the task was
+      # ending 24-47% of episodes for performing the manoeuvre under study, the
+      # rate rising with density.  10 m allows two lane changes with margin; the
+      # road boundaries below remain the real off-road test.
+      out_lane_thres: 10
       time_limit: 500
       left_lane_boundry: 3.7
       right_lane_boundry: 17.7
@@ -884,7 +908,13 @@ carla_overtake_d45:
           destination_reached: 20.0,
         }
     terminal:
-      out_lane_thres: 5
+      # Lane centres are 3.2 m apart, so a 5 m tolerance permits exactly one lane
+      # change and terminates the episode on a second one.  With multi-lane
+      # traffic the ego routinely needs two lanes to find a gap, and the task was
+      # ending 24-47% of episodes for performing the manoeuvre under study, the
+      # rate rising with density.  10 m allows two lane changes with margin; the
+      # road boundaries below remain the real off-road test.
+      out_lane_thres: 10
       time_limit: 500
       left_lane_boundry: 3.7
       right_lane_boundry: 17.7
@@ -976,7 +1006,13 @@ carla_overtake_fov:
           destination_reached: 20.0,
         }
     terminal:
-      out_lane_thres: 5
+      # Lane centres are 3.2 m apart, so a 5 m tolerance permits exactly one lane
+      # change and terminates the episode on a second one.  With multi-lane
+      # traffic the ego routinely needs two lanes to find a gap, and the task was
+      # ending 24-47% of episodes for performing the manoeuvre under study, the
+      # rate rising with density.  10 m allows two lane changes with margin; the
+      # road boundaries below remain the real off-road test.
+      out_lane_thres: 10
       time_limit: 500
       left_lane_boundry: 3.7
       right_lane_boundry: 17.7
@@ -1073,7 +1109,13 @@ carla_overtake_noisy:
           destination_reached: 20.0,
         }
     terminal:
-      out_lane_thres: 5
+      # Lane centres are 3.2 m apart, so a 5 m tolerance permits exactly one lane
+      # change and terminates the episode on a second one.  With multi-lane
+      # traffic the ego routinely needs two lanes to find a gap, and the task was
+      # ending 24-47% of episodes for performing the manoeuvre under study, the
+      # rate rising with density.  10 m allows two lane changes with margin; the
+      # road boundaries below remain the real off-road test.
+      out_lane_thres: 10
       time_limit: 500
       left_lane_boundry: 3.7
       right_lane_boundry: 17.7
@@ -1165,7 +1207,13 @@ carla_overtake_noevt:
           destination_reached: 20.0,
         }
     terminal:
-      out_lane_thres: 5
+      # Lane centres are 3.2 m apart, so a 5 m tolerance permits exactly one lane
+      # change and terminates the episode on a second one.  With multi-lane
+      # traffic the ego routinely needs two lanes to find a gap, and the task was
+      # ending 24-47% of episodes for performing the manoeuvre under study, the
+      # rate rising with density.  10 m allows two lane changes with margin; the
+      # road boundaries below remain the real off-road test.
+      out_lane_thres: 10
       time_limit: 500
       left_lane_boundry: 3.7
       right_lane_boundry: 17.7
@@ -1257,7 +1305,13 @@ carla_overtake_evtenv:
           destination_reached: 20.0,
         }
     terminal:
-      out_lane_thres: 5
+      # Lane centres are 3.2 m apart, so a 5 m tolerance permits exactly one lane
+      # change and terminates the episode on a second one.  With multi-lane
+      # traffic the ego routinely needs two lanes to find a gap, and the task was
+      # ending 24-47% of episodes for performing the manoeuvre under study, the
+      # rate rising with density.  10 m allows two lane changes with margin; the
+      # road boundaries below remain the real off-road test.
+      out_lane_thres: 10
       time_limit: 500
       left_lane_boundry: 3.7
       right_lane_boundry: 17.7
@@ -1349,7 +1403,13 @@ carla_overtake_evtimag:
           destination_reached: 20.0,
         }
     terminal:
-      out_lane_thres: 5
+      # Lane centres are 3.2 m apart, so a 5 m tolerance permits exactly one lane
+      # change and terminates the episode on a second one.  With multi-lane
+      # traffic the ego routinely needs two lanes to find a gap, and the task was
+      # ending 24-47% of episodes for performing the manoeuvre under study, the
+      # rate rising with density.  10 m allows two lane changes with margin; the
+      # road boundaries below remain the real off-road test.
+      out_lane_thres: 10
       time_limit: 500
       left_lane_boundry: 3.7
       right_lane_boundry: 17.7
@@ -1441,7 +1501,13 @@ carla_overtake_frank:
           destination_reached: 20.0,
         }
     terminal:
-      out_lane_thres: 5
+      # Lane centres are 3.2 m apart, so a 5 m tolerance permits exactly one lane
+      # change and terminates the episode on a second one.  With multi-lane
+      # traffic the ego routinely needs two lanes to find a gap, and the task was
+      # ending 24-47% of episodes for performing the manoeuvre under study, the
+      # rate rising with density.  10 m allows two lane changes with margin; the
+      # road boundaries below remain the real off-road test.
+      out_lane_thres: 10
       time_limit: 500
       left_lane_boundry: 3.7
       right_lane_boundry: 17.7
@@ -1533,7 +1599,13 @@ carla_overtake_thrq:
           destination_reached: 20.0,
         }
     terminal:
-      out_lane_thres: 5
+      # Lane centres are 3.2 m apart, so a 5 m tolerance permits exactly one lane
+      # change and terminates the episode on a second one.  With multi-lane
+      # traffic the ego routinely needs two lanes to find a gap, and the task was
+      # ending 24-47% of episodes for performing the manoeuvre under study, the
+      # rate rising with density.  10 m allows two lane changes with margin; the
+      # road boundaries below remain the real off-road test.
+      out_lane_thres: 10
       time_limit: 500
       left_lane_boundry: 3.7
       right_lane_boundry: 17.7
@@ -1625,7 +1697,13 @@ carla_overtake_lonly:
           destination_reached: 20.0,
         }
     terminal:
-      out_lane_thres: 5
+      # Lane centres are 3.2 m apart, so a 5 m tolerance permits exactly one lane
+      # change and terminates the episode on a second one.  With multi-lane
+      # traffic the ego routinely needs two lanes to find a gap, and the task was
+      # ending 24-47% of episodes for performing the manoeuvre under study, the
+      # rate rising with density.  10 m allows two lane changes with margin; the
+      # road boundaries below remain the real off-road test.
+      out_lane_thres: 10
       time_limit: 500
       left_lane_boundry: 3.7
       right_lane_boundry: 17.7
@@ -1717,7 +1795,13 @@ carla_overtake_w1:
           destination_reached: 20.0,
         }
     terminal:
-      out_lane_thres: 5
+      # Lane centres are 3.2 m apart, so a 5 m tolerance permits exactly one lane
+      # change and terminates the episode on a second one.  With multi-lane
+      # traffic the ego routinely needs two lanes to find a gap, and the task was
+      # ending 24-47% of episodes for performing the manoeuvre under study, the
+      # rate rising with density.  10 m allows two lane changes with margin; the
+      # road boundaries below remain the real off-road test.
+      out_lane_thres: 10
       time_limit: 500
       left_lane_boundry: 3.7
       right_lane_boundry: 17.7
@@ -1809,7 +1893,13 @@ carla_overtake_w10:
           destination_reached: 20.0,
         }
     terminal:
-      out_lane_thres: 5
+      # Lane centres are 3.2 m apart, so a 5 m tolerance permits exactly one lane
+      # change and terminates the episode on a second one.  With multi-lane
+      # traffic the ego routinely needs two lanes to find a gap, and the task was
+      # ending 24-47% of episodes for performing the manoeuvre under study, the
+      # rate rising with density.  10 m allows two lane changes with margin; the
+      # road boundaries below remain the real off-road test.
+      out_lane_thres: 10
       time_limit: 500
       left_lane_boundry: 3.7
       right_lane_boundry: 17.7
@@ -1901,7 +1991,13 @@ carla_overtake_critical:
           destination_reached: 20.0,
         }
     terminal:
-      out_lane_thres: 5
+      # Lane centres are 3.2 m apart, so a 5 m tolerance permits exactly one lane
+      # change and terminates the episode on a second one.  With multi-lane
+      # traffic the ego routinely needs two lanes to find a gap, and the task was
+      # ending 24-47% of episodes for performing the manoeuvre under study, the
+      # rate rising with density.  10 m allows two lane changes with margin; the
+      # road boundaries below remain the real off-road test.
+      out_lane_thres: 10
       time_limit: 500
       left_lane_boundry: 3.7
       right_lane_boundry: 17.7
@@ -1993,7 +2089,13 @@ carla_overtake_calm:
           destination_reached: 20.0,
         }
     terminal:
-      out_lane_thres: 5
+      # Lane centres are 3.2 m apart, so a 5 m tolerance permits exactly one lane
+      # change and terminates the episode on a second one.  With multi-lane
+      # traffic the ego routinely needs two lanes to find a gap, and the task was
+      # ending 24-47% of episodes for performing the manoeuvre under study, the
+      # rate rising with density.  10 m allows two lane changes with margin; the
+      # road boundaries below remain the real off-road test.
+      out_lane_thres: 10
       time_limit: 500
       left_lane_boundry: 3.7
       right_lane_boundry: 17.7
@@ -2085,7 +2187,13 @@ carla_overtake_legacy:
           destination_reached: 20.0,
         }
     terminal:
-      out_lane_thres: 5
+      # Lane centres are 3.2 m apart, so a 5 m tolerance permits exactly one lane
+      # change and terminates the episode on a second one.  With multi-lane
+      # traffic the ego routinely needs two lanes to find a gap, and the task was
+      # ending 24-47% of episodes for performing the manoeuvre under study, the
+      # rate rising with density.  10 m allows two lane changes with margin; the
+      # road boundaries below remain the real off-road test.
+      out_lane_thres: 10
       time_limit: 500
       left_lane_boundry: 3.7
       right_lane_boundry: 17.7
@@ -2107,6 +2215,7 @@ carla_overtake_legacy:
     train.log_keys_video: [birdeye_wpt]
 
 # <<< ProSafeAV revision tasks (generated) <<<
+
 
 
 

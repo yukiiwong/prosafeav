@@ -43,6 +43,7 @@ class EventSpec:
     trigger_distance: float          # fires when the ego is this close (m)
     duration_steps: int
     intensity: float                 # brake fraction, or lateral gain for cut-in
+    earliest_step: int = 0           # not before this step of the episode
     target_id: int = -1              # which background vehicle performs it
     fired: bool = False
     steps_left: int = 0
@@ -55,6 +56,7 @@ class EventSpec:
             "duration_steps": self.duration_steps,
             "intensity": self.intensity,
             "target_id": self.target_id,
+            "earliest_step": self.earliest_step,
             "fired": self.fired,
             "fire_step": self.fire_step,
         }
@@ -77,12 +79,14 @@ class ConflictEventScheduler:
         "lead_brake": {
             "prob": 0.5,
             "trigger_distance": [12.0, 30.0],
+            "earliest": [1.5, 5.0],
             "duration": [0.8, 2.0],      # seconds
             "intensity": [0.6, 1.0],     # brake fraction
         },
         "cut_in": {
             "prob": 0.4,
             "trigger_distance": [8.0, 22.0],
+            "earliest": [2.0, 6.0],
             "duration": [1.5, 3.0],
             "intensity": [0.6, 1.2],     # lateral steering gain
         },
@@ -141,10 +145,18 @@ class ConflictEventScheduler:
                 target = -1
 
             dur = self.rng.uniform(*spec["duration"])
+            # Nothing fires in the opening moments.  The ego starts from a low
+            # speed a short distance behind its target, so a hard brake at step
+            # zero is not a conflict a driver could resolve; recorded episodes
+            # showed events firing across steps 0 to 11, before the vehicle had
+            # moved.
+            delay = spec.get("earliest", [1.0, 4.0])
+            earliest = int(round(float(self.rng.uniform(*delay)) / self.dt))
             self.events.append(
                 EventSpec(
                     kind=kind,
                     trigger_distance=float(self.rng.uniform(*spec["trigger_distance"])),
+                    earliest_step=earliest,
                     duration_steps=max(1, int(round(dur / self.dt))),
                     intensity=float(self.rng.uniform(*spec["intensity"])),
                     target_id=int(target),
@@ -172,6 +184,8 @@ class ConflictEventScheduler:
 
         for event in self.events:
             if event.fired or event.kind == "stopped_vehicle":
+                continue
+            if step < event.earliest_step:
                 continue
             state = states.get(event.target_id)
             if state is None:
