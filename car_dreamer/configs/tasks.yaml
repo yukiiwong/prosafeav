@@ -2119,7 +2119,6 @@ carla_four_lane_prosafeav:
       out_lane_thres: 3
     name: CarlaFourLaneEnv-v0
     observation.enabled:
-    - camera
     - collision
     - birdeye_wpt
     num_vehicles: 40
@@ -2168,7 +2167,6 @@ carla_four_lane_prosafeav:
     encoder.cnn_keys: birdeye_wpt
     decoder.cnn_keys: birdeye_wpt
     run.log_keys_video:
-    - camera
     - birdeye_wpt
     run.log_keys_max: collision
     run.log_keys_mean: (log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)
@@ -2184,7 +2182,6 @@ carla_four_lane_prosafeav:
     - 6
     - 6
     train.log_keys_video:
-    - camera
     - birdeye_wpt
 
 # As above at a higher vehicle count, to separate the effect of density from the effect of the conflict geometry.
@@ -2205,7 +2202,6 @@ carla_four_lane_prosafeav_dense:
       out_lane_thres: 3
     name: CarlaFourLaneEnv-v0
     observation.enabled:
-    - camera
     - collision
     - birdeye_wpt
     num_vehicles: 80
@@ -2254,7 +2250,6 @@ carla_four_lane_prosafeav_dense:
     encoder.cnn_keys: birdeye_wpt
     decoder.cnn_keys: birdeye_wpt
     run.log_keys_video:
-    - camera
     - birdeye_wpt
     run.log_keys_max: collision
     run.log_keys_mean: (log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)
@@ -2270,7 +2265,6 @@ carla_four_lane_prosafeav_dense:
     - 6
     - 6
     train.log_keys_video:
-    - camera
     - birdeye_wpt
 
 # Forced merge: the conflict is gap acceptance on a converging path, where the car-following DRAC is undefined and the encroachment indicator governs.
@@ -2294,7 +2288,6 @@ carla_lane_merge_prosafeav:
       background_speed: 25
     name: CarlaLaneMergeEnv-v0
     observation.enabled:
-    - camera
     - collision
     - birdeye_wpt
     reward.desired_speed: 6
@@ -2339,7 +2332,6 @@ carla_lane_merge_prosafeav:
     encoder.cnn_keys: birdeye_wpt
     decoder.cnn_keys: birdeye_wpt
     run.log_keys_video:
-    - camera
     - birdeye_wpt
     run.log_keys_mean: (log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)
     evt.mode: both
@@ -2354,7 +2346,6 @@ carla_lane_merge_prosafeav:
     - 6
     - 6
     train.log_keys_video:
-    - camera
     - birdeye_wpt
 
 # Unsignalised crossing conflict against an oncoming flow; a pure test of the two-dimensional conflict indicators.
@@ -2384,7 +2375,6 @@ carla_right_turn_prosafeav:
       - 0.3
       - 0.9
     observation.enabled:
-    - camera
     - collision
     - birdeye_wpt
     lane_start_point:
@@ -2426,7 +2416,6 @@ carla_right_turn_prosafeav:
     encoder.cnn_keys: birdeye_wpt
     decoder.cnn_keys: birdeye_wpt
     run.log_keys_video:
-    - camera
     - birdeye_wpt
     run.log_keys_mean: (log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)
     evt.mode: both
@@ -2441,7 +2430,6 @@ carla_right_turn_prosafeav:
     - 6
     - 6
     train.log_keys_video:
-    - camera
     - birdeye_wpt
   env.min_flow_dist: 6
   env.max_flow_dist: 8
@@ -2467,7 +2455,6 @@ carla_roundabout_prosafeav:
       background_speed: 16
     name: CarlaRoundaboutEnv-v0
     observation.enabled:
-    - camera
     - collision
     - birdeye_wpt
     lane_start_point:
@@ -2528,7 +2515,6 @@ carla_roundabout_prosafeav:
     encoder.cnn_keys: birdeye_wpt
     decoder.cnn_keys: birdeye_wpt
     run.log_keys_video:
-    - camera
     - birdeye_wpt
     run.log_keys_mean: (log_entropy|eval_|ttc|drac|evt_|speed_|conflict_|closing_|n_interacting|n_background|initial_gap|wpt_dis)
     evt.mode: both
@@ -2543,10 +2529,10 @@ carla_roundabout_prosafeav:
     - 6
     - 6
     train.log_keys_video:
-    - camera
     - birdeye_wpt
 
 # <<< ProSafeAV cross-scenario tasks (generated) <<<
+
 
 
 

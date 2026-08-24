@@ -124,6 +124,20 @@ def main():
                 block[backend]["evt.mode"] = "both"
                 block[backend]["evt.imag_weight"] = 3.0
 
+        # These tasks inherit observation.enabled from their base task, which
+        # includes a camera the encoder never reads: encoder.cnn_keys is
+        # birdeye_wpt alone.  Storing it made the replay chunks 20-25 MB against
+        # 4.5 MB for the overtaking tasks, and replay is the throughput
+        # bottleneck, so the sweep ran roughly three times slower for nothing.
+        enabled = list(env.get("observation.enabled", []))
+        if "camera" in enabled:
+            env["observation.enabled"] = [k for k in enabled if k != "camera"]
+        for backend in ("dreamerv3", "dreamerv2"):
+            if backend in block and "run.log_keys_video" in block[backend]:
+                block[backend]["run.log_keys_video"] = ["birdeye_wpt"]
+            if backend in block and "train.log_keys_video" in block[backend]:
+                block[backend]["train.log_keys_video"] = ["birdeye_wpt"]
+
         block["__description__"] = description
         out[name] = block
 
