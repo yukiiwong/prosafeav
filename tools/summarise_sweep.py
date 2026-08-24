@@ -58,18 +58,31 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--logdir", default="logdir")
     ap.add_argument("--cap", type=int, default=60000)
+    ap.add_argument("--min-progress", type=float, default=0.9,
+                    help="a run must have reached this fraction of --cap to be "
+                         "included; still-warming runs are listed separately")
     args = ap.parse_args()
 
     groups = defaultdict(list)
+    partial = defaultdict(list)
     for d in sorted(glob.glob(os.path.join(args.logdir, "*_s[0-9]"))):
         m = re.match(r"^(.*)_s(\d+)$", os.path.basename(d))
         if not m:
             continue
         series = load(d, args.cap)
-        if series:
+        if not series:
+            continue
+        # Averaging a run that has barely started together with a finished one
+        # produces a number that describes neither. It reads as a catastrophic
+        # result with an enormous standard error, and it cost an afternoon of
+        # chasing a cross-scenario failure that did not exist.
+        reached = max((s for s, _ in series.get("episode/score", [(0, 0)])), default=0)
+        if reached >= args.cap * args.min_progress:
             groups[m.group(1)].append(series)
+        else:
+            partial[m.group(1)].append((os.path.basename(d), reached))
 
-    if not groups:
+    if not groups and not partial:
         print("no runs found")
         return
 
@@ -92,6 +105,12 @@ def main():
                 cells.append(f"{mean:.{dec}f}".rjust(12))
         print(f"{name:26s} {len(runs):5d} " + " ".join(cells))
     print(f"\nlast 20% of each run, truncated at step {args.cap}")
+    if partial:
+        print(f"\nstill short of {args.min_progress:.0%} of {args.cap} steps, "
+              "excluded from the table:")
+        for name in sorted(partial):
+            for run, reached in partial[name]:
+                print(f"  {run:34s} {reached:7d} steps")
 
 
 if __name__ == "__main__":
