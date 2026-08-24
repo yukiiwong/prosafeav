@@ -79,7 +79,13 @@ for line in open(sys.argv[1], errors="ignore"):
 print(int(best))
 PYEOF
 )
-    if awk "BEGIN{exit !($done_steps >= $target)}"; then
+    # Compare with a tolerance.  Metrics are written at an interval, so the last
+    # logged step almost never lands exactly on the target: runs finished at
+    # 59999, 59992 and 59985 against a target of 60000, an exact >= test called
+    # every one of them unfinished, and the sweep spent half a day restarting
+    # work that was already done.
+    local tolerance="${COMPLETE_TOLERANCE:-0.995}"
+    if awk "BEGIN{exit !($done_steps >= $target * $tolerance)}"; then
         log "already at ${done_steps} steps, target ${target}; skipping"
         return 0
     fi
@@ -171,8 +177,33 @@ MAX_RESTARTS="${MAX_RESTARTS:-20}"
 # forever while no step is taken.  Treat a metrics file that has stopped growing
 # as a failure too, otherwise a hang silently burns the rest of the run.
 STALL_SECONDS="${STALL_SECONDS:-900}"
+# The replay buffer is about half the footprint of a finished run and is only
+# needed to resume one.  Across a large sweep that is the difference between
+# fitting on the disk and filling a volume other people are also using.  Opt-in,
+# because pruning forfeits resuming.
+prune_replay() {
+    if [ "${PRUNE_REPLAY:-0}" = "1" ] && [ -d "${LOGDIR}/replay" ]; then
+        local freed
+        freed=$(du -sh "${LOGDIR}/replay" 2>/dev/null | cut -f1)
+        rm -rf "${LOGDIR}/replay"
+        log "pruned the replay buffer (${freed} reclaimed)"
+    fi
+}
+
 while true; do
     sleep 60
+
+    # The trainer does not exit its process when the step target is reached: the
+    # loop condition goes false and it then sits there. Waiting for the stall
+    # watchdog and restarting only repeats that, so every run used to burn its
+    # entire restart budget at the finish line -- about seven hours each, and the
+    # replay buffer was never pruned because the run never ended cleanly.
+    # Checking the step count here ends the run within a minute of it finishing.
+    if skip_if_complete; then
+        kill -9 "$TRAIN_PID" 2>/dev/null
+        prune_replay
+        cleanup
+    fi
 
     stalled=0
     metrics="${LOGDIR}/metrics.jsonl"
@@ -201,16 +232,7 @@ while true; do
         code=$?
         if [ "$code" -eq 0 ] && [ "$stalled" -eq 0 ]; then
             log "training finished cleanly"
-            # The replay buffer is about half the footprint of a finished run and
-            # is only needed to resume one.  Over a hundred-run sweep it is the
-            # difference between fitting on the disk and filling a volume other
-            # people are also using.  Opt-in, because pruning forfeits resuming.
-            if [ "${PRUNE_REPLAY:-0}" = "1" ] && [ -d "${LOGDIR}/replay" ]; then
-                local freed
-                freed=$(du -sh "${LOGDIR}/replay" 2>/dev/null | cut -f1)
-                rm -rf "${LOGDIR}/replay"
-                log "pruned the replay buffer (${freed} reclaimed)"
-            fi
+            prune_replay
             cleanup
         fi
         RESTARTS=$((RESTARTS + 1))
