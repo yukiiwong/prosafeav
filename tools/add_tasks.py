@@ -55,6 +55,7 @@ COMMON_ENV = """    name: CarlaOvertakeEnv-v0
       indicator_mode: {ind_mode}  # max | longitudinal | planar
       interaction_radius: 50.0
       crash_drac: 8.5
+      state_path: null        # set per run by tools/run_one.sh
     reward:
       desired_speed: 5
       reward_overtake_dist: 8

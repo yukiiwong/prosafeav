@@ -36,6 +36,7 @@ other reward terms once multiplied by ``w_evt``.
 from __future__ import annotations
 
 import json
+import os
 import warnings
 from collections import deque
 
@@ -711,6 +712,56 @@ class CopulaEVTModel:
     def save(self, path):
         with open(path, "w") as fh:
             json.dump(self.state_dict(), fh, indent=2)
+
+    def save_state(self, path):
+        """Persist the fitted parameters *and* the conflict-sample buffer.
+
+        Without the buffer a resumed run starts collecting exceedances from
+        scratch and cannot refit until it has gathered ``min_sample`` again.  A
+        run that restarts a few times therefore never accumulates the tail the
+        model is supposed to be estimating: measured over the first sweep, runs
+        with 20 to 40 restarts were refitting on about a thousand samples
+        instead of the twenty thousand the buffer holds.
+        """
+        arr = np.asarray(self.buffer, dtype=np.float32) if self.buffer else np.zeros((0, 2), np.float32)
+        tmp = f"{path}.tmp"
+        np.savez_compressed(tmp, buffer=arr, meta=np.array(json.dumps(self.state_dict())))
+        os.replace(tmp + ".npz" if not tmp.endswith(".npz") else tmp, path)
+
+    def restore_state(self, path):
+        """Reload a buffer and fit saved by :meth:`save_state`.  Best effort."""
+        try:
+            data = np.load(path, allow_pickle=True)
+        except Exception as exc:
+            print(f"[EVT] could not restore state from {path}: {exc}")
+            return False
+        buf = data["buffer"]
+        self.buffer.clear()
+        for row in buf:
+            self.buffer.append((float(row[0]), float(row[1])))
+        try:
+            meta = json.loads(str(data["meta"]))
+        except Exception:
+            meta = {}
+        if meta.get("margin_ttc"):
+            self.margin_ttc.load_state_dict(meta["margin_ttc"])
+        if meta.get("margin_drac"):
+            self.margin_drac.load_state_dict(meta["margin_drac"])
+        cop = meta.get("copula") or {}
+        if cop.get("name"):
+            self.copula_name = cop["name"]
+            self.copula = _COPULAS[self.copula_name]()
+            if cop.get("alpha") is not None:
+                self.copula.alpha = cop["alpha"]
+            if cop.get("theta") is not None:
+                self.copula.theta = cop["theta"]
+        self.zeta_joint = meta.get("zeta_joint", 0.0)
+        self.n_joint = meta.get("n_joint", 0)
+        self.n_updates = meta.get("n_updates", 0)
+        self.n_contact = meta.get("n_contact", 0)
+        self.n_saturated = meta.get("n_saturated", 0)
+        print(f"[EVT] restored {len(self.buffer)} samples and {self.n_updates} prior fits")
+        return True
 
     def load(self, path, freeze=True):
         """Load a previously fitted model.

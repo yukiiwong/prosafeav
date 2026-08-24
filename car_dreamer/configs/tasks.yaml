@@ -495,6 +495,7 @@ carla_overtake_prosafeav:
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
       crash_drac: 8.5
+      state_path: null        # set per run by tools/run_one.sh
     reward:
       desired_speed: 5
       reward_overtake_dist: 8
@@ -586,6 +587,7 @@ carla_overtake_d05:
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
       crash_drac: 8.5
+      state_path: null        # set per run by tools/run_one.sh
     reward:
       desired_speed: 5
       reward_overtake_dist: 8
@@ -677,6 +679,7 @@ carla_overtake_d15:
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
       crash_drac: 8.5
+      state_path: null        # set per run by tools/run_one.sh
     reward:
       desired_speed: 5
       reward_overtake_dist: 8
@@ -768,6 +771,7 @@ carla_overtake_d30:
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
       crash_drac: 8.5
+      state_path: null        # set per run by tools/run_one.sh
     reward:
       desired_speed: 5
       reward_overtake_dist: 8
@@ -859,6 +863,7 @@ carla_overtake_d45:
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
       crash_drac: 8.5
+      state_path: null        # set per run by tools/run_one.sh
     reward:
       desired_speed: 5
       reward_overtake_dist: 8
@@ -950,6 +955,7 @@ carla_overtake_fov:
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
       crash_drac: 8.5
+      state_path: null        # set per run by tools/run_one.sh
     reward:
       desired_speed: 5
       reward_overtake_dist: 8
@@ -1046,6 +1052,7 @@ carla_overtake_noisy:
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
       crash_drac: 8.5
+      state_path: null        # set per run by tools/run_one.sh
     reward:
       desired_speed: 5
       reward_overtake_dist: 8
@@ -1137,6 +1144,7 @@ carla_overtake_noevt:
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
       crash_drac: 8.5
+      state_path: null        # set per run by tools/run_one.sh
     reward:
       desired_speed: 5
       reward_overtake_dist: 8
@@ -1228,6 +1236,7 @@ carla_overtake_evtenv:
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
       crash_drac: 8.5
+      state_path: null        # set per run by tools/run_one.sh
     reward:
       desired_speed: 5
       reward_overtake_dist: 8
@@ -1319,6 +1328,7 @@ carla_overtake_evtimag:
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
       crash_drac: 8.5
+      state_path: null        # set per run by tools/run_one.sh
     reward:
       desired_speed: 5
       reward_overtake_dist: 8
@@ -1410,6 +1420,7 @@ carla_overtake_frank:
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
       crash_drac: 8.5
+      state_path: null        # set per run by tools/run_one.sh
     reward:
       desired_speed: 5
       reward_overtake_dist: 8
@@ -1501,6 +1512,7 @@ carla_overtake_thrq:
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
       crash_drac: 8.5
+      state_path: null        # set per run by tools/run_one.sh
     reward:
       desired_speed: 5
       reward_overtake_dist: 8
@@ -1592,6 +1604,7 @@ carla_overtake_lonly:
       indicator_mode: longitudinal  # max | longitudinal | planar
       interaction_radius: 50.0
       crash_drac: 8.5
+      state_path: null        # set per run by tools/run_one.sh
     reward:
       desired_speed: 5
       reward_overtake_dist: 8
@@ -1683,6 +1696,7 @@ carla_overtake_w1:
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
       crash_drac: 8.5
+      state_path: null        # set per run by tools/run_one.sh
     reward:
       desired_speed: 5
       reward_overtake_dist: 8
@@ -1774,6 +1788,7 @@ carla_overtake_w10:
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
       crash_drac: 8.5
+      state_path: null        # set per run by tools/run_one.sh
     reward:
       desired_speed: 5
       reward_overtake_dist: 8
@@ -1865,6 +1880,7 @@ carla_overtake_critical:
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
       crash_drac: 8.5
+      state_path: null        # set per run by tools/run_one.sh
     reward:
       desired_speed: 5
       reward_overtake_dist: 8
@@ -1956,6 +1972,7 @@ carla_overtake_calm:
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
       crash_drac: 8.5
+      state_path: null        # set per run by tools/run_one.sh
     reward:
       desired_speed: 5
       reward_overtake_dist: 8
@@ -2047,6 +2064,7 @@ carla_overtake_legacy:
       indicator_mode: max  # max | longitudinal | planar
       interaction_radius: 50.0
       crash_drac: 8.5
+      state_path: null        # set per run by tools/run_one.sh
     reward:
       desired_speed: 5
       reward_overtake_dist: 8
@@ -2089,6 +2107,7 @@ carla_overtake_legacy:
     train.log_keys_video: [birdeye_wpt]
 
 # <<< ProSafeAV revision tasks (generated) <<<
+
 
 
 
@@ -2163,6 +2182,7 @@ carla_four_lane_prosafeav:
       interaction_radius: 50.0
       ttc_cap: 30.0
       crash_drac: 8.5
+      state_path:
   dreamerv3:
     encoder.cnn_keys: birdeye_wpt
     decoder.cnn_keys: birdeye_wpt
@@ -2246,6 +2266,7 @@ carla_four_lane_prosafeav_dense:
       interaction_radius: 50.0
       ttc_cap: 30.0
       crash_drac: 8.5
+      state_path:
   dreamerv3:
     encoder.cnn_keys: birdeye_wpt
     decoder.cnn_keys: birdeye_wpt
@@ -2328,6 +2349,7 @@ carla_lane_merge_prosafeav:
       interaction_radius: 50.0
       ttc_cap: 30.0
       crash_drac: 8.5
+      state_path:
   dreamerv3:
     encoder.cnn_keys: birdeye_wpt
     decoder.cnn_keys: birdeye_wpt
@@ -2412,6 +2434,7 @@ carla_right_turn_prosafeav:
       interaction_radius: 50.0
       ttc_cap: 30.0
       crash_drac: 8.5
+      state_path:
   dreamerv3:
     encoder.cnn_keys: birdeye_wpt
     decoder.cnn_keys: birdeye_wpt
@@ -2511,6 +2534,7 @@ carla_roundabout_prosafeav:
       interaction_radius: 50.0
       ttc_cap: 30.0
       crash_drac: 8.5
+      state_path:
   dreamerv3:
     encoder.cnn_keys: birdeye_wpt
     decoder.cnn_keys: birdeye_wpt
@@ -2532,6 +2556,7 @@ carla_roundabout_prosafeav:
     - birdeye_wpt
 
 # <<< ProSafeAV cross-scenario tasks (generated) <<<
+
 
 
 

@@ -48,6 +48,7 @@ EVT_BLOCK = {
     "interaction_radius": 50.0,
     "ttc_cap": 30.0,
     "crash_drac": 8.5,
+    "state_path": None,
 }
 
 # base task -> (derived name, description, overrides applied to env)

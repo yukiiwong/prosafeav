@@ -1,3 +1,4 @@
+import os
 from abc import abstractmethod
 
 import numpy as np
@@ -116,6 +117,14 @@ class CarlaWptEnv(CarlaBaseEnv):
         )
         if evt_cfg.get("load_from"):
             self.evt_model.load(evt_cfg["load_from"], freeze=True)
+
+        # Carry the conflict-sample buffer and the fit across process restarts.
+        # The model is rebuilt on every construction, so without this a run that
+        # is restarted -- by a hung simulator, say -- silently discards the tail
+        # it had accumulated and refits on a fraction of the data.
+        self.evt_state_path = evt_cfg.get("state_path") or None
+        if self.evt_state_path and os.path.exists(self.evt_state_path):
+            self.evt_model.restore_state(self.evt_state_path)
 
         # Total steps across episodes: the refit cadence has to be measured on the
         # full data stream, not on the per-episode counter.
@@ -236,7 +245,10 @@ class CarlaWptEnv(CarlaBaseEnv):
             self._total_steps += 1
             self.evt_model.add_sample(ttc, drac)
             if self.evt_update_interval > 0 and self._total_steps % self.evt_update_interval == 0:
-                if self.evt_model.update_model() and self.evt_model.margin_ttc.fitted:
+                refitted = self.evt_model.update_model()
+                if refitted and self.evt_state_path:
+                    self.evt_model.save_state(self.evt_state_path)
+                if refitted and self.evt_model.margin_ttc.fitted:
                     # The safety observation saturates at TTC_HORIZON, so a fitted
                     # threshold beyond it can never be exceeded by the world
                     # model's prediction and the imagination-side penalty would be

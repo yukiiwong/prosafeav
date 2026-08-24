@@ -148,6 +148,7 @@ start_training() {
     "$PYTHON" -u "$ENTRY" \
         --env.world.carla_port "$CARLA_PORT" \
         --env.world.traffic.tm_seed "$CARLA_PORT" \
+        --env.evt.state_path "${LOGDIR}/evt_state.npz" \
         --dreamerv3.logdir "$LOGDIR" \
         "${EXTRA[@]}" >> "$LOG" 2>&1 &
     TRAIN_PID=$!
