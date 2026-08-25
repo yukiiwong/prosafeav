@@ -503,9 +503,17 @@ class CarlaOvertakeEnv(CarlaWptEnv):
         ego_location = get_vehicle_pos(self.get_ego_vehicle())
         terminal_config = self._config.terminal
         info = super().get_terminal_conditions()
-        info["out_of_lane"] = (
-            self.get_wpt_dist(ego_location) > terminal_config.out_lane_thres
-            or ego_x < terminal_config.left_lane_boundry
+        # Two different failures share one name.  Off-route means the ego has
+        # strayed from the lane it is meant to follow, which an overtaking
+        # manoeuvre does on purpose; off-road means it has left the drivable
+        # surface, which is a real failure.  Widening the tolerance for the first
+        # does nothing about the second, and the log could not tell them apart.
+        off_route = self.get_wpt_dist(ego_location) > terminal_config.out_lane_thres
+        off_road = (
+            ego_x < terminal_config.left_lane_boundry
             or ego_x > terminal_config.right_lane_boundry
         )
+        info["off_route"] = off_route
+        info["off_road"] = off_road
+        info["out_of_lane"] = off_route or off_road
         return info
